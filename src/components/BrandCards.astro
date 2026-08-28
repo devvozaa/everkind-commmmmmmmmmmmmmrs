@@ -1,0 +1,149 @@
+---
+interface Brand {
+  name: string;
+  href: string;
+  img: { src: string };
+}
+
+const { brands } = Astro.props as { brands: Brand[] };
+
+const THEMES = [
+  {
+    bg:        'var(--color-everkind-lightgrey)',
+    arrowBg:   'var(--color-everkind-dark)',
+    arrowIcon: 'var(--color-everkind-bg)',
+    link:      'var(--color-everkind-dark)',
+    hBg:       'var(--color-everkind-green)',
+    hText:     'var(--color-everkind-bg)',
+  },
+  {
+    bg:        'var(--color-everkind-green)',
+    arrowBg:   'var(--color-everkind-dark)',
+    arrowIcon: 'var(--color-everkind-bg)',
+    link:      'var(--color-everkind-bg)',
+    hBg:       'var(--color-everkind-bg)',
+    hText:     'var(--color-everkind-dark)',
+  },
+  {
+    bg:        'var(--color-everkind-darkgrey)',
+    arrowBg:   'var(--color-everkind-bg)',
+    arrowIcon: 'var(--color-everkind-dark)',
+    link:      'var(--color-everkind-bg)',
+    hBg:       'var(--color-everkind-bg)',
+    hText:     'var(--color-everkind-dark)',
+  },
+  {
+    bg:        'var(--color-everkind-darkgrey)',
+    arrowBg:   'var(--color-everkind-bg)',
+    arrowIcon: 'var(--color-everkind-dark)',
+    link:      'var(--color-everkind-bg)',
+    hBg:       'var(--color-everkind-green)',
+    hText:     'var(--color-everkind-bg)',
+  },
+];
+
+const brandsWithThemes = brands.map((brand, i) => ({
+  ...brand,
+  s: THEMES[i % THEMES.length],
+}));
+const isSingleCard = brandsWithThemes.length === 1;
+
+// const showComingSoon = brands.length === 1;
+---
+
+<div class={`grid grid-cols-1 gap-5 mt-12 max-w-6xl mx-auto ${isSingleCard ? 'sm:grid-cols-1 justify-items-center' : 'sm:grid-cols-2'}`}>
+
+  {brandsWithThemes.map(({ name, href, img, s }) => (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      class={`brand-card group flex flex-col justify-between rounded-4xl p-6 sm:p-8 min-h-80 overflow-hidden ${isSingleCard ? 'w-full max-w-xl' : ''}`}
+      style={`background-color: ${s.bg}; box-shadow: 0px 5px 0px #000000;`}
+    >
+      {/* ── ROW 1: Heading badge ── */}
+      <span
+        class="self-start inline-block px-4 py-2 rounded-lg text-xl sm:text-2xl leading-tight tracking-tight max-w-[70%]"
+        style={`background-color: ${s.hBg}; color: ${s.hText}; font-family: var(--font-serif);`}
+      >
+        {name}
+      </span>
+
+      {/* ── ROW 2: Illustration — centered ── */}
+      <div class="flex flex-1 items-center justify-center py-6">
+        <img
+          src={img.src}
+          alt={name}
+          class="w-75 sm:w-75 h-auto object-contain select-none pointer-events-none"
+        />
+      </div>
+
+      {/* ── ROW 3: Visit Site link ── */}
+      <div class="flex items-center gap-3">
+        <span
+          class="shrink-0 flex items-center justify-center w-9 h-9 rounded-full transition-transform duration-300 group-hover:rotate-45"
+          style={`background-color: ${s.arrowBg};`}
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 13L13 3M13 3H6M13 3V10" stroke={s.arrowIcon} stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span
+          class="relative text-sm sm:text-base after:content-[''] after:absolute after:left-0 after:-bottom-0.5 after:w-full after:h-px after:scale-x-0 after:origin-left after:transition-transform after:duration-300 after:ease-out group-hover:after:scale-x-100"
+          style={`color: ${s.link}; font-family: var(--font-sans);`}
+        >
+          Visit Site
+        </span>
+      </div>
+    </a>
+  ))}
+
+  {/* ── COMING SOON CARD ── */}
+  <!-- {showComingSoon && (
+    <div
+      class="relative flex flex-col justify-center items-center rounded-4xl p-6 sm:p-8 min-h-80 overflow-hidden"
+      style="background-color: var(--color-everkind-lightgrey); box-shadow: 0px 5px 0px #000000; border: 2.5px dashed var(--color-everkind-dark);"
+    >
+      <div class="absolute inset-0 opacity-[0.04]"
+        style="background-image: radial-gradient(var(--color-everkind-dark) 1.5px, transparent 1.5px); background-size: 24px 24px;">
+      </div>
+
+      <div class="relative flex flex-col items-center gap-4 text-center">
+        <span
+          class="inline-flex items-center gap-1.5 bg-(--color-everkind-green) text-white px-4 py-2 rounded-lg text-sm tracking-wide"
+          style="font-family: var(--font-sans);"
+        >
+          <span class="w-1.5 h-1.5 rounded-full bg-white opacity-80 animate-bounce" style="animation-delay: 0ms"></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-white opacity-80 animate-bounce" style="animation-delay: 150ms"></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-white opacity-80 animate-bounce" style="animation-delay: 300ms"></span>
+        </span>
+
+        <p
+          class="text-2xl sm:text-3xl leading-snug tracking-tight"
+          style="font-family: var(--font-serif); color: var(--color-everkind-dark);"
+        >
+          More good things<br/>from Everkind, soon.
+        </p>
+
+        <p
+          class="text-sm opacity-60 max-w-xs"
+          style="font-family: var(--font-sans); color: var(--color-everkind-dark);"
+        >
+          We're working on something worth waiting for.
+        </p>
+      </div>
+    </div>
+  )} -->
+
+</div>
+
+<style>
+  .brand-card {
+    transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .brand-card:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 8px 8px 0px #000000 !important;
+  }
+</style>

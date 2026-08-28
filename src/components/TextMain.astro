@@ -1,0 +1,36 @@
+---
+// src/components/TextMain.astro
+
+export interface Props {
+  headline: string;
+  subtext: string;
+  headlineColor?: string;
+  parallaxSpeed?: string; // Optional: Defaults to 0.1
+}
+
+const { 
+  headline, 
+  subtext, 
+  headlineColor = "text-(--color-everkind-green)",
+  parallaxSpeed = "0.1"
+} = Astro.props;
+---
+
+<section class="w-full bg-(--color-everkind-bg) px-6 sm:px-12 md:px-16 lg:px-24 pt-32 lg:pt-48 pb-20 lg:pb-32 flex flex-col items-center justify-center relative z-10">
+  
+  <div data-parallax={parallaxSpeed} class="max-w-6xl mx-auto text-center flex flex-col items-center gap-6 md:gap-8 w-full">
+    <h1 
+      class={`text-5xl sm:text-6xl lg:text-[4.5rem] ${headlineColor} font-normal leading-[1.05] tracking-tight`}
+      style="font-family: var(--font-serif);"
+      set:html={headline}
+    />
+
+    <p 
+      class="text-base sm:text-lg text-(--color-everkind-dark)/80 leading-relaxed max-w-2xl mt-2"
+      style="font-family: var(--font-sans);"
+      set:html={subtext}
+    />
+
+  </div>
+  
+</section>

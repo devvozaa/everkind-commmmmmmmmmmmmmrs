@@ -1,0 +1,251 @@
+---
+// src/pages/blog/[slug].astro
+import Layout from '../../layouts/Layout.astro';
+import { Client } from '@notionhq/client';
+
+export const prerender = false;
+
+const { slug } = Astro.params;
+const notion = new Client({ auth: import.meta.env.NOTION_BLOG_SECRET });
+const dataSourceId = import.meta.env.NOTION_BLOG_DATA_SOURCE_ID;
+
+let pageData: any = null;
+let rawBlocks: any[] = [];
+
+try {
+  const response = await (notion as any).dataSources.query({
+    data_source_id: dataSourceId,
+    filter: { property: 'Slug', rich_text: { equals: slug } },
+  });
+
+  if (response.results.length === 0) return Astro.redirect('/404');
+
+  pageData = response.results[0];
+  const blockResponse = await notion.blocks.children.list({ block_id: pageData.id });
+  rawBlocks = blockResponse.results;
+} catch (e) {
+  console.error("Notion Render Error:", e);
+  return Astro.redirect('/404');
+}
+
+// --- 1. THE RICH TEXT PARSER ---
+const renderRichText = (richTextArr: any[]) => {
+  if (!richTextArr || !richTextArr.length) return '';
+  return richTextArr.map((span) => {
+    let text = span.plain_text || '';
+
+    text = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+    if (span.type === 'equation') {
+      text = text.replace(/\^([a-zA-Z0-9{}]+)/g, "<sup>$1</sup>").replace(/_([a-zA-Z0-9{}]+)/g, "<sub>$1</sub>");
+      text = text.replace(/[{}]/g, "");
+    }
+
+    const { bold, italic, underline, strikethrough, code } = span.annotations || {};
+
+    if (bold)          text = `<strong class="font-bold text-(--color-everkind-dark)">${text}</strong>`;
+    if (italic)        text = `<em class="italic">${text}</em>`;
+    if (underline)     text = `<u class="underline underline-offset-4">${text}</u>`;
+    if (strikethrough) text = `<s class="line-through opacity-60">${text}</s>`;
+    if (code)          text = `<code class="bg-(--color-everkind-dark)/5 text-(--color-everkind-dark) px-1.5 py-0.5 rounded text-sm font-mono">${text}</code>`;
+
+    if (span.href) {
+      text = `<a href="${span.href}" class="text-(--color-everkind-green) underline decoration-1 underline-offset-4 hover:opacity-80 transition-opacity" target="_blank" rel="noopener noreferrer">${text}</a>`;
+    }
+
+    return text;
+  }).join('');
+};
+
+// --- 2. THE LIST GROUPING ALGORITHM ---
+const groupedBlocks: any[] = [];
+let currentListGroup: any = null;
+
+rawBlocks.forEach((block) => {
+  if (block.type === 'bulleted_list_item' || block.type === 'numbered_list_item') {
+    const listType = block.type === 'bulleted_list_item' ? 'ul' : 'ol';
+    if (!currentListGroup || currentListGroup.listType !== listType) {
+      currentListGroup = { type: 'list_group', listType, items: [] };
+      groupedBlocks.push(currentListGroup);
+    }
+    currentListGroup.items.push(block);
+  } else {
+    currentListGroup = null;
+    groupedBlocks.push(block);
+  }
+});
+
+const title      = pageData.properties.Name?.title?.[0]?.plain_text || 'Untitled';
+const coverImage = pageData.cover?.external?.url || pageData.cover?.file?.url || null;
+const dateStr    = pageData.properties['Published Date']?.date?.start;
+const date       = dateStr
+  ? new Date(dateStr).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+  : '';
+---
+
+<Layout title={`${title} | Everkind Journal`}>
+  {/* FIX 1: Stripped pb-12 down to pb-0. This removes all intrinsic padding from the bottom of the white content area. */}
+  <article class="w-full bg-(--color-everkind-bg) pt-32 pb-0 px-6 sm:px-12 md:px-16 lg:px-24 relative z-10">
+
+    {/* Gutted the gap-16 to gap-10 to pull the body closer to the header if needed */}
+    <div class="max-w-6xl mx-auto w-full flex flex-col gap-10">
+
+      {/* Article Header */}
+      <header class="flex flex-col gap-10">
+        <div class="flex flex-col gap-4 max-w-4xl">
+          <span class="text-(--color-everkind-green) text-xs font-bold uppercase tracking-widest" style="font-family: var(--font-sans);">{date}</span>
+          <h1 class="text-4xl md:text-6xl lg:text-7xl text-(--color-everkind-dark) leading-[1.1] font-normal" style="font-family: var(--font-serif);">{title}</h1>
+        </div>
+
+        {coverImage && (
+          <div class="mx-auto md:max-w-4xl lg:max-w-4xl aspect-video md:aspect-[21/9] rounded-3xl overflow-hidden bg-(--color-everkind-lightgrey) border border-(--color-everkind-dark)/5">
+            <img src={coverImage} alt={title} class="w-full h-full object-cover" />
+          </div>
+        )}
+      </header>
+
+      <div class="w-full space-y-6">
+
+        {groupedBlocks.map((block) => {
+
+          if (block.type === 'list_group') {
+            const isUnordered = block.listType === 'ul';
+            const ListTag = isUnordered ? 'ul' : 'ol';
+            const listStyle = isUnordered ? 'disc' : 'decimal';
+
+            return (
+              /* FIX 2: List Indentation. We now wrap the list in a 3xl div to perfectly align with paragraphs. 
+                 Then, we use a hardcoded inline margin-left on the UL/OL to strictly force a 3rem (48px) indentation inward. */
+              <div class="block w-full max-w-4xl mx-auto my-6">
+                <ListTag
+                  class="space-y-3"
+                  style={`list-style-type: ${listStyle}; list-style-position: outside; margin-left: 3rem;`}
+                >
+                  {block.items.map((item: any) => (
+                    <li
+                      class="text-lg text-(--color-everkind-darkgrey) leading-relaxed pl-2"
+                      style="font-family: var(--font-sans); display: list-item;"
+                    >
+                      <Fragment set:html={renderRichText(item[item.type].rich_text)} />
+                    </li>
+                  ))}
+                </ListTag>
+              </div>
+            );
+          }
+
+          const { type } = block;
+          const value = block[type];
+          const renderedText = renderRichText(value?.rich_text);
+
+          switch (type) {
+
+            case 'paragraph':
+              if (!renderedText) return <div class="h-4"></div>;
+              return (
+                <p
+                  class="block w-full max-w-4xl mx-auto text-lg md:text-xl text-(--color-everkind-darkgrey) leading-relaxed"
+                  style="font-family: var(--font-sans);"
+                >
+                  <Fragment set:html={renderedText} />
+                </p>
+              );
+
+            case 'heading_1':
+              return (
+                <h2
+                  class="block w-full max-w-4xl mx-auto text-6xl md:text-5xl text-(--color-everkind-dark) font-normal mt-16 mb-2"
+                  style="font-family: var(--font-serif);"
+                >
+                  <Fragment set:html={renderedText} />
+                </h2>
+              );
+
+            case 'heading_2':
+              return (
+                <h3
+                  class="block w-full max-w-4xl mx-auto text-4xl md:text-4xl text-(--color-everkind-dark) font-normal mt-12 mb-2"
+                  style="font-family: var(--font-serif);"
+                >
+                  <Fragment set:html={renderedText} />
+                </h3>
+              );
+
+            case 'heading_3':
+              return (
+                <h4
+                  class="block w-full max-w-4xl mx-auto text-3xl md:text-3xl text-(--color-everkind-dark) font-normal mt-10 mb-2"
+                  style="font-family: var(--font-serif);"
+                >
+                  <Fragment set:html={renderedText} />
+                </h4>
+              );
+
+            case 'quote':
+              return (
+                <blockquote class="block w-full max-w-4xl mx-auto border-l-4 border-(--color-everkind-green) bg-(--color-everkind-green)/5 p-8 my-10 rounded-r-2xl">
+                  <p
+                    class="text-2xl md:text-2xl italic text-(--color-everkind-dark) leading-relaxed"
+                    style="font-family: var(--font-serif);"
+                  >
+                    <Fragment set:html={renderedText} />
+                  </p>
+                </blockquote>
+              );
+
+            case 'image': {
+              const src     = value.external?.url || value.file?.url;
+              const caption = renderRichText(value.caption);
+              return (
+                /* FIX 3: Reverted back to `w-full max-w-5xl`. Setting background to lightgrey and object-fit to contain ensures 
+                   if the image intrinsic size is smaller than 5xl, it won't stretch weirdly, but the container will respect the 5xl limit. */
+                <figure class="block w-full max-w-5xl mx-auto my-12">
+                  <img
+                    src={src}
+                    alt="Article media"
+                    class="rounded-2xl w-full border border-(--color-everkind-dark)/5"
+                    style="max-height: 85vh; object-fit: contain; background-color: var(--color-everkind-lightgrey);"
+                  />
+                  {caption && (
+                    <figcaption
+                      class="mt-4 text-center text-sm text-(--color-everkind-midgrey)"
+                      style="font-family: var(--font-sans);"
+                    >
+                      <Fragment set:html={caption} />
+                    </figcaption>
+                  )}
+                </figure>
+              );
+            }
+
+            case 'divider':
+              return <hr class="block w-full max-w-6xl mx-auto my-12 border-t border-(--color-everkind-dark)/10" />;
+
+            default:
+              return null;
+          }
+        })}
+
+        {/* FIX 4: Aggressive spacing reduction. Changed mt-20 to mt-10, pt-8 to pt-6. Removed all bottom margin. */}
+        <div class="block w-full max-w-6xl mx-auto mt-10 mb-8 pt-6 border-t border-(--color-everkind-dark)/10">
+          <a
+            href="/blog"
+            class="text-(--color-everkind-dark) hover:text-(--color-everkind-green) font-semibold text-sm flex items-center gap-3 hover:-translate-x-1 transition-transform w-fit"
+            style="font-family: var(--font-sans);"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256" class="rotate-180">
+              <path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L204.69,128,138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"></path>
+            </svg>
+            Back to Journal
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </article>
+</Layout>
+
+<style is:global>
+  sup { font-size: 0.75em; vertical-align: super; line-height: 0; }
+  sub { font-size: 0.75em; vertical-align: sub; line-height: 0; }
+</style>

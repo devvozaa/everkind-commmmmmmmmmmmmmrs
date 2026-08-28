@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+:root {
+  /* Your Brand Colors */
+  --color-everkind-green: #0B3D25;
+  --color-everkind-dark: #000000;
+  --color-everkind-bg: #FFFFFF;
+  --color-everkind-lightgrey: #F3F3F3;
+  --color-everkind-darkgrey: #191A23;
+  --color-everkind-midgrey: #292A32;
+  
+  /* Your Brand Typography */
+  --font-serif: "GFS Didot", serif;
+  --font-sans: "Inter", sans-serif;
+}
+/* Hide scrollbar for Chrome, Safari and Opera */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+html, body {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}

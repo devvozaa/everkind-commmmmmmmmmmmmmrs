@@ -1,0 +1,231 @@
+---
+import ConsumerInsightCycle from './ConsumerInsightCycle.astro';
+---
+
+<section class="ai-native-platform w-full bg-(--color-everkind-bg) px-6 sm:px-12 md:px-16 lg:px-24 py-14 sm:py-20 md:py-28">
+  <div class="max-w-6xl mx-auto">
+
+    <div class="platform-header grid grid-cols-1 lg:grid-cols-[0.95fr_1.05fr] gap-8 sm:gap-10 lg:gap-16 items-start reveal">
+      <div>
+        <div class="platform-tag">
+          <span class="platform-tag-light" aria-hidden="true"></span>
+          <p class="section-eyebrow">AI NATIVE CONSUMER WELLNESS PLATFORM</p>
+        </div>
+        <h2 class="platform-heading mt-4 sm:mt-5">
+          <span>A new kind of</span>
+          <span>consumer company.</span>
+        </h2>
+      </div>
+
+      <div class="platform-copy lg:pt-8 max-w-xl">
+        <p class="platform-intro">
+          We are building a new kind of consumer company — one powered by AI that learns &amp; iterates across the entire brand lifecycle.
+        </p>
+      </div>
+    </div>
+
+    <div class="cycle-stage mt-12 sm:mt-14 md:mt-18 reveal" style="transition-delay: 90ms;">
+      <div class="stage-label">
+        <span class="stage-dot" aria-hidden="true"></span>
+        <span>CONTINUOUS LEARNING LOOP</span>
+      </div>
+
+      <div class="process-cycle-wrap">
+        <ConsumerInsightCycle />
+      </div>
+    </div>
+
+    <p class="supporting-copy mt-10 sm:mt-12 md:mt-14 reveal" style="transition-delay: 160ms;">
+      We believe the future of consumer brands belongs to companies that don’t try to predict what consumers want. They learn, adapt, and build their way there — continuously turning consumer signals into better products &amp; services.
+    </p>
+  </div>
+</section>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=GFS+Didot&family=Inter:wght@400;500;600;700&display=swap');
+
+  .ai-native-platform {
+    color: var(--color-everkind-dark);
+    font-family: var(--font-sans);
+  }
+
+  /* ---------- Header ---------- */
+
+  .platform-header {
+    position: relative;
+  }
+
+  @media (min-width: 1024px) {
+    .platform-header > div:last-child {
+      border-left: 1px solid rgba(11, 61, 37, 0.16);
+      padding-left: clamp(1.5rem, 2.4vw, 2.5rem);
+    }
+  }
+
+  .platform-tag {
+    align-items: center;
+    display: inline-flex;
+    gap: 0.55rem;
+  }
+
+  .platform-tag-light {
+    animation: tag-pulse 2.4s ease-in-out infinite;
+    background: var(--color-everkind-green);
+    border-radius: 999px;
+    box-shadow: 0 0 0 0 rgba(11, 61, 37, 0.28), 0 0 14px rgba(11, 61, 37, 0.28);
+    display: inline-block;
+    height: 0.5rem;
+    width: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .section-eyebrow {
+    color: var(--color-everkind-green);
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+
+  .platform-heading {
+    color: var(--color-everkind-dark);
+    font-family: var(--font-serif);
+    font-size: clamp(2.3rem, 3.7vw, 3.7rem);
+    font-weight: 400;
+    letter-spacing: -0.045em;
+    line-height: 0.96;
+    max-width: 25rem;
+  }
+
+  .platform-heading span {
+    display: block;
+  }
+
+  .platform-copy {
+    max-width: 34rem;
+    padding-top: clamp(0.25rem, 2vw, 1.5rem);
+  }
+
+  .platform-intro {
+    color: var(--color-everkind-green);
+    font-family: var(--font-sans);
+    font-size: clamp(1rem, 1.35vw, 1.22rem);
+    font-weight: 400;
+    letter-spacing: -0.012em;
+    line-height: 1.42;
+    max-width: 31rem;
+    text-wrap: balance;
+  }
+
+  /* ---------- Supporting copy and cycle stage ---------- */
+
+  .cycle-stage {
+    background: transparent;
+    position: relative;
+  }
+
+  .stage-label {
+    align-items: center;
+    color: var(--color-everkind-green);
+    display: inline-flex;
+    font-family: var(--font-sans);
+    font-size: 0.66rem;
+    font-weight: 700;
+    gap: 0.5rem;
+    letter-spacing: 0.14em;
+    margin-bottom: clamp(1rem, 2.5vw, 1.75rem);
+    text-transform: uppercase;
+  }
+
+  .stage-dot {
+    background: var(--color-everkind-green);
+    border-radius: 999px;
+    display: inline-block;
+    height: 0.4rem;
+    width: 0.4rem;
+    flex-shrink: 0;
+  }
+
+  .process-cycle-wrap {
+    margin: 0 auto;
+    max-width: 46rem;
+    width: 100%;
+  }
+
+  .supporting-copy {
+    color: var(--color-everkind-midgrey);
+    font-family: var(--font-sans);
+    font-size: clamp(0.98rem, 1.25vw, 1.12rem);
+    letter-spacing: -0.008em;
+    line-height: 1.55;
+    margin-left: 0;
+    max-width: 47rem;
+    text-wrap: pretty;
+  }
+
+  /* ---------- Motion ---------- */
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .platform-tag-light {
+      animation: none;
+    }
+    .reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+
+  @keyframes tag-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(11, 61, 37, 0.18), 0 0 12px rgba(11, 61, 37, 0.22); }
+    50% { box-shadow: 0 0 0 6px rgba(11, 61, 37, 0.04), 0 0 18px rgba(11, 61, 37, 0.38); }
+  }
+
+  @media (max-width: 639px) {
+    .platform-heading {
+      font-size: clamp(2rem, 8.6vw, 2.85rem);
+      letter-spacing: -0.04em;
+      line-height: 0.98;
+      max-width: 21rem;
+    }
+
+    .platform-intro {
+      max-width: 31rem;
+    }
+  }
+</style>
+
+<script>
+  const targets = document.querySelectorAll('.ai-native-platform .reveal');
+
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
+
+    targets.forEach((el) => observer.observe(el));
+  } else {
+    targets.forEach((el) => el.classList.add('is-visible'));
+  }
+</script>

@@ -1,0 +1,86 @@
+---
+// src/pages/careers/[slug].astro
+import Layout from '../../layouts/Layout.astro';
+import NotionBlock from '../../components/NotionBlock.astro'; // 🟢 Import the new component
+import { Client } from '@notionhq/client';
+
+export const prerender = false;
+
+const { slug } = Astro.params;
+const notion = new Client({ auth: import.meta.env.NOTION_CAREERS_DB_SECRET });
+const dataSourceId = import.meta.env.NOTION_CAREERS_DATA_SOURCE_ID;
+
+// RECURSIVE FETCH stays here in the frontmatter
+async function getBlocksWithChildren(blockId: string) {
+  const blocks: any[] = [];
+  let cursor: string | undefined;
+
+  while (true) {
+    const { results, next_cursor }: any = await notion.blocks.children.list({
+      block_id: blockId,
+      start_cursor: cursor,
+    });
+    
+    for (const block of results) {
+      if (block.has_children) {
+        block.children = await getBlocksWithChildren(block.id);
+      }
+      blocks.push(block);
+    }
+    cursor = next_cursor;
+    if (!cursor) break;
+  }
+  return blocks;
+}
+
+let pageData: any = null;
+let deepBlocks: any[] = [];
+
+try {
+  const response = await (notion as any).dataSources.query({
+    data_source_id: dataSourceId,
+    filter: { property: 'Slug', rich_text: { equals: slug } },
+  });
+
+  if (response.results.length === 0) return Astro.redirect('/404');
+
+  pageData = response.results[0];
+  deepBlocks = await getBlocksWithChildren(pageData.id);
+} catch (e) {
+  console.error("Notion Careers Render Error:", e);
+  return Astro.redirect('/404');
+}
+
+const title = pageData.properties.Name?.title?.[0]?.plain_text || 'Untitled Position';
+---
+
+<Layout title={`${title} | Everkind Careers`}>
+  <article class="w-full bg-(--color-everkind-bg) pt-20 pb-12 px-6 sm:px-12 md:px-16 lg:px-24 relative z-10">
+    <div class="max-w-4xl mx-auto w-full flex flex-col gap-8">
+
+      <header class="flex flex-col gap-6 py-4 border-b border-(--color-everkind-green)/20 pb-10">
+        <a href="/opportunities" class="group text-(--color-everkind-green) text-xs font-bold uppercase tracking-normal flex items-center gap-2 w-fit" style="font-family: var(--font-sans);">
+           <svg width="14" height="14" viewBox="0 0 256 256" class="rotate-180 group-hover:-translate-x-1 transition-transform"><path fill="currentColor" d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L204.69,128,138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"/></svg>
+           Back to Opportunities
+        </a>
+        <h1 class="text-5xl md:text-6xl text-(--color-everkind-dark) leading-tight font-normal" style="font-family: var(--font-serif);">{title}</h1>
+      </header>
+
+      <div class="w-full">
+        {deepBlocks.map((block) => <NotionBlock block={block} />)}
+      </div>
+
+      <footer class="mt-10 pt-10 border-t border-(--color-everkind-dark)/5">
+        <div class="bg-(--color-everkind-green)/5 border border-(--color-everkind-green)/15 p-8 md:p-10 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-8">
+            <div class="flex flex-col gap-1">
+                <h3 class="text-2xl md:text-3xl font-normal text-(--color-everkind-dark)" style="font-family: var(--font-serif);">Ready to build the future?</h3>
+                <p class="text-(--color-everkind-darkgrey) text-lg" style="font-family: var(--font-sans);">Take the first step in your Everkind journey.</p>
+            </div>
+            <a href={`/applicationform?role=${slug}`} class="px-10 py-4 rounded-xl bg-(--color-everkind-green) text-white hover:bg-(--color-everkind-dark) transition-all duration-300 text-base font-semibold tracking-normal">
+                Apply Now
+            </a>
+        </div>
+      </footer>
+    </div>
+  </article>
+</Layout>

@@ -1,0 +1,82 @@
+---
+import Layout from '../layouts/Layout.astro';
+import InvestorCard from '../components/InvestorCard.astro';
+import { Client } from '@notionhq/client';
+
+interface InvestorPost {
+	id: string;
+	title: string;
+	excerpt: string;
+	date: string;
+	category: string;
+	imageUrl: string;
+	link: string | null;
+}
+
+const notion = new Client({ auth: import.meta.env.NOTION_INVESTORS_SECRET });
+const dataSourceId = import.meta.env.NOTION_INVESTORS_DATA_SOURCE_ID;
+
+let investorPosts: InvestorPost[] = [];
+
+const getPlainText = (property: any) => property?.rich_text?.[0]?.plain_text || property?.title?.[0]?.plain_text || '';
+
+const toDate = (props: any) => {
+	const dateValue = props['Published Date']?.date?.start || props.Date?.date?.start;
+	if (!dateValue) return 'No Date';
+
+	return new Date(dateValue).toLocaleDateString('en-US', {
+		month: 'short', day: '2-digit', year: 'numeric',
+	});
+};
+
+try {
+	const response = await (notion as any).dataSources.query({
+		data_source_id: dataSourceId,
+		sorts: [{ timestamp: 'created_time', direction: 'descending' }],
+	});
+
+	investorPosts = response.results.map((page: any) => {
+		const props = page.properties;
+		const title = getPlainText(props['Name Of Investor']) || getPlainText(props.Name) || 'Untitled';
+		const link = props.URL?.url || props['External Link']?.url || props.Link?.url || null;
+
+		return {
+			id: page.id,
+			title,
+			excerpt: link ? 'Explore investor profile' : 'Investor profile',
+			date: page.created_time
+				? new Date(page.created_time).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })
+				: toDate(props),
+			category: 'Investor',
+			imageUrl: page.cover?.external?.url || page.cover?.file?.url || 'https://via.placeholder.com/1200x800',
+			link,
+		};
+	});
+} catch (e: unknown) {
+	if (e instanceof Error) {
+		console.error('Notion Investors Fetch Error:', e.message);
+	}
+}
+---
+
+<Layout title="Everkind Consumers">
+	<main>
+		<section class="w-full bg-(--color-everkind-bg) px-6 sm:px-12 md:px-16 lg:px-24 pt-24 sm:pt-28 pb-10 relative z-10">
+			<div class="max-w-6xl mx-auto flex items-end justify-between border-b border-(--color-everkind-dark)/10 pb-6">
+				<h1 class="text-4xl md:text-5xl font-normal text-(--color-everkind-dark)" style="font-family: var(--font-serif);">
+					Our Investors
+				</h1>
+			</div>
+		</section>
+
+		<section id="learn-more" class="w-full bg-(--color-everkind-bg) px-6 sm:px-12 md:px-16 lg:px-24 pb-24 relative z-10">
+			<div class="max-w-6xl mx-auto w-full flex flex-col gap-12">
+				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-12">
+					{investorPosts.map((post: InvestorPost) => (
+						<InvestorCard post={post} />
+					))}
+				</div>
+			</div>
+		</section>
+	</main>
+</Layout>

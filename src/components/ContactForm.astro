@@ -1,0 +1,153 @@
+---
+// src/components/Contact.astro
+import contactIllustration from '../assets/Contact.svg';
+
+const EMAILJS_PUBLIC_KEY  = '5DVr18ZSIlnxfjy47';
+const EMAILJS_SERVICE_ID  = 'service_8tg61xn';
+const EMAILJS_TEMPLATE_ID = 'template_qvoqz4w';
+---
+
+<section class="w-full bg-(--color-everkind-bg) px-6 sm:px-12 md:px-16 lg:px-24 pt-40 pb-32">
+  <div class="max-w-6xl mx-auto">
+
+    {/* ── HEADER ── */}
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
+      <h2
+        class="text-5xl md:text-7xl text-(--color-everkind-dark) font-normal tracking-tighter leading-[0.85]"
+        style="font-family: var(--font-serif);"
+      >
+        Contact Us
+      </h2>
+      {/* Increased max-w from 340px to 480px for better flow */}
+      <p
+        class="text-(--color-everkind-dark)/60 text-sm sm:text-base leading-relaxed max-w-120"
+        style="font-family: var(--font-sans);"
+      >
+         
+      </p>
+    </div>
+
+    {/* ── THE CARD ── */}
+    {/* Reduced radii to rounded-3xl. Added overflow-hidden to let illustration touch the edge. */}
+    <div 
+      class="relative bg-zinc-100 rounded-3xl overflow-hidden min-h-150 flex items-center transition-all duration-500 hover:shadow-2xl hover:shadow-black/5"
+    >
+      
+      {/* ── LEFT: FORM SIDE ── */}
+      <div class="w-full lg:w-3/5 p-8 md:p-16 lg:p-20 relative z-20">
+        <form id="contact-form" class="flex flex-col gap-7">
+          
+          <div class="flex flex-col gap-2 group">
+            <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 group-focus-within:text-(--color-everkind-green) transition-colors">Full Name</label>
+            <input 
+              type="text" 
+              name="name" 
+              placeholder="Name" 
+              required
+              class="w-full bg-white/50 backdrop-blur-sm border border-zinc-200 px-6 py-4 rounded-xl text-zinc-900 placeholder:text-zinc-300 focus:bg-white focus:border-(--color-everkind-green) focus:outline-none transition-all"
+              style="font-family: var(--font-sans);"
+            />
+          </div>
+
+          <div class="flex flex-col gap-2 group">
+            <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 group-focus-within:text-(--color-everkind-green) transition-colors">Email Address</label>
+            <input 
+              type="email" 
+              name="email" 
+              placeholder="Email" 
+              required
+              class="w-full bg-white/50 backdrop-blur-sm border border-zinc-200 px-6 py-4 rounded-xl text-zinc-900 placeholder:text-zinc-300 focus:bg-white focus:border-(--color-everkind-green) focus:outline-none transition-all"
+              style="font-family: var(--font-sans);"
+            />
+          </div>
+
+          <div class="flex flex-col gap-2 group">
+            <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 group-focus-within:text-(--color-everkind-green) transition-colors">Message</label>
+            <textarea 
+              name="message" 
+              rows="4" 
+              placeholder="How can we help?" 
+              required
+              class="w-full bg-white/50 backdrop-blur-sm border border-zinc-200 px-6 py-4 rounded-xl text-zinc-900 placeholder:text-zinc-300 focus:bg-white focus:border-(--color-everkind-green) focus:outline-none transition-all resize-none"
+              style="font-family: var(--font-sans);"
+            ></textarea>
+          </div>
+
+          {/* Reduced Button Size */}
+          <div class="pt-2">
+            <button 
+              type="submit" 
+              id="submit-btn" 
+              class="group inline-flex items-center gap-3 px-10 py-4 bg-(--color-everkind-dark) text-white rounded-xl font-medium hover:bg-(--color-everkind-green) transition-all duration-300 active:scale-95"
+              style="font-family: var(--font-sans);"
+            >
+              Send Message
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </button>
+            <p id="form-status" class="mt-4 text-xs font-medium h-4 transition-opacity duration-300 opacity-0"></p>
+          </div>
+
+        </form>
+      </div>
+
+      {/* ── RIGHT: ILLUSTRATION ── */}
+      {/* Touches the right edge perfectly using absolute positioning */}
+      <div 
+        data-parallax="0.05"
+        class="hidden lg:block absolute right-0 top-0 bottom-0 w-1/2 pointer-events-none select-none"
+      >
+        <img 
+          src={contactIllustration.src} 
+          alt="" 
+          class="w-full h-full object-contain object-right"
+        />
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script define:vars={{ EMAILJS_PUBLIC_KEY, EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID }}>
+  // 1. Correct Logic Check: Load and Init
+  const script = document.createElement('script');
+  script.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
+  script.onload = () => { window.emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY }); };
+  document.head.appendChild(script);
+
+  const form = document.getElementById('contact-form');
+  const submitBtn = document.getElementById('submit-btn');
+  const statusEl = document.getElementById('form-status');
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    // UI Feedback: Start
+    submitBtn.disabled = true;
+    submitBtn.classList.add('opacity-50');
+    statusEl.style.opacity = '1';
+    statusEl.textContent = 'Sending...';
+    statusEl.style.color = 'inherit';
+
+    try {
+      // 2. Verified Logic: Send the actual form object
+      await window.emailjs.sendForm(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, form);
+      
+      // UI Feedback: Success
+      statusEl.textContent = "Message sent successfully.";
+      statusEl.style.color = "var(--color-everkind-green, #166534)";
+      form.reset();
+      
+      setTimeout(() => { statusEl.style.opacity = '0'; }, 5000);
+    } catch (error) {
+      // UI Feedback: Error
+      statusEl.textContent = "Error sending message. Please try again.";
+      statusEl.style.color = "#b91c1c";
+      console.error('EmailJS Error:', error);
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.classList.remove('opacity-50');
+    }
+  });
+</script>

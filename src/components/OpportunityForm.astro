@@ -1,0 +1,295 @@
+---
+import { Client } from '@notionhq/client';
+
+const notion = new Client({ auth: import.meta.env.NOTION_SECRET });
+const dataSourceId = import.meta.env.NOTION_DATA_SOURCE_ID;
+
+let roleOptions = [];
+let expOptions = [];
+
+function extractOptions(dataSource: any, columnName: string) {
+  const column = dataSource.properties[columnName];
+  if (!column) return [];
+  if (column.type === 'select') return column.select.options || [];
+  if (column.type === 'multi_select') return column.multi_select.options || [];
+  return [];
+}
+
+try {
+  const dataSource = await notion.dataSources.retrieve({ data_source_id: dataSourceId });
+  roleOptions = extractOptions(dataSource, 'Role');
+  expOptions = extractOptions(dataSource, 'Total Work Experience');
+} catch (error) {
+  roleOptions = [{ name: 'Design' }, { name: 'Engineering' }];
+  expOptions = [{ name: '0-2 Years' }, { name: '3-5 Years' }];
+}
+---
+
+<div class="w-full bg-(--color-everkind-lightgrey) rounded-4xl border border-(--color-everkind-dark)/5 overflow-hidden transition-all duration-500">
+  <div class="max-w-4xl mx-auto p-8 md:p-16 lg:p-20 flex flex-col gap-12">
+    
+    {/* Form Header */}
+    <div class="flex flex-col gap-4 text-center border-b border-(--color-everkind-dark)/5 pb-12">
+      <h2 class="text-4xl md:text-6xl text-(--color-everkind-dark) font-normal" style="font-family: var(--font-serif);">Apply to Everkind</h2>
+      <p class="text-(--color-everkind-midgrey) text-sm md:text-base max-w-xl mx-auto leading-relaxed" style="font-family: var(--font-sans);">
+        Join a team of restless innovators. Please provide your professional details and resume below for consideration.
+      </p>
+    </div>
+
+    <form id="notion-form" class="flex flex-col gap-10" autocomplete="off">
+      
+      {/* SECTION 1: Personal Details */}
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="flex flex-col gap-2.5 group">
+          <label class="text-[11px] font-bold uppercase text-(--color-everkind-midgrey) group-focus-within:text-(--color-everkind-green) transition-colors ml-1" style="font-family: var(--font-sans);">Full Name</label>
+          <input type="text" name="name" required placeholder="Jane Doe" autocomplete="off" 
+            class="w-full bg-white border border-(--color-everkind-dark)/10 px-5 py-4 rounded-xl focus:border-(--color-everkind-green) focus:outline-none transition-all placeholder:text-(--color-everkind-midgrey)/30" 
+            style="font-family: var(--font-sans);" />
+        </div>
+        
+        <div class="flex flex-col gap-2.5 group">
+          <label class="text-[11px] font-bold uppercase text-(--color-everkind-midgrey) group-focus-within:text-(--color-everkind-green) transition-colors ml-1" style="font-family: var(--font-sans);">Email Address</label>
+          <input type="email" name="email" required placeholder="jane@everkind.com" autocomplete="off" 
+            class="w-full bg-white border border-(--color-everkind-dark)/10 px-5 py-4 rounded-xl focus:border-(--color-everkind-green) focus:outline-none transition-all placeholder:text-(--color-everkind-midgrey)/30" 
+            style="font-family: var(--font-sans);" />
+        </div>
+      </div>
+
+      {/* SECTION 2: Custom Dropdowns (Role & Experience) */}
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        
+        {/* Role Select */}
+        <div class="flex flex-col gap-2.5 relative custom-select-container">
+          <label class="text-[11px] font-bold uppercase text-(--color-everkind-midgrey) ml-1" style="font-family: var(--font-sans);">Desired Role</label>
+          <input type="hidden" name="role" required />
+          <button type="button" class="select-trigger w-full bg-white border border-(--color-everkind-dark)/10 px-5 py-4 rounded-xl flex items-center justify-between text-left transition-all hover:border-(--color-everkind-dark)/20">
+            <span class="text-(--color-everkind-midgrey)/50" style="font-family: var(--font-sans);">Select a role...</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="text-(--color-everkind-green) transition-transform duration-300" fill="currentColor" viewBox="0 0 256 256"><path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80a8,8,0,0,1,11.32-11.32L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path></svg>
+          </button>
+          
+          <div class="select-options absolute top-[calc(100%+8px)] left-0 w-full bg-white border border-(--color-everkind-dark)/10 rounded-xl shadow-2xl z-50 opacity-0 pointer-events-none transition-all translate-y-2">
+            <div class="max-h-64 overflow-y-auto p-2 custom-scrollbar">
+              {roleOptions.map((opt: any) => (
+                <div data-value={opt.name} class="option-item px-4 py-3 rounded-lg cursor-pointer hover:bg-(--color-everkind-green) hover:text-white transition-colors text-sm text-(--color-everkind-dark)" style="font-family: var(--font-sans);">{opt.name}</div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Experience Select */}
+        <div class="flex flex-col gap-2.5 relative custom-select-container">
+          <label class="text-[11px] font-bold uppercase text-(--color-everkind-midgrey) ml-1" style="font-family: var(--font-sans);">Total Work Experience</label>
+          <input type="hidden" name="experience" required />
+          <button type="button" class="select-trigger w-full bg-white border border-(--color-everkind-dark)/10 px-5 py-4 rounded-xl flex items-center justify-between text-left transition-all hover:border-(--color-everkind-dark)/20">
+            <span class="text-(--color-everkind-midgrey)/50" style="font-family: var(--font-sans);">Experience level...</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="text-(--color-everkind-green) transition-transform duration-300" fill="currentColor" viewBox="0 0 256 256"><path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80a8,8,0,0,1,11.32-11.32L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path></svg>
+          </button>
+          
+          <div class="select-options absolute top-[calc(100%+8px)] left-0 w-full bg-white border border-(--color-everkind-dark)/10 rounded-xl shadow-2xl z-50 opacity-0 pointer-events-none transition-all translate-y-2">
+            <div class="max-h-64 overflow-y-auto p-2 custom-scrollbar">
+              {expOptions.map((opt: any) => (
+                <div data-value={opt.name} class="option-item px-4 py-3 rounded-lg cursor-pointer hover:bg-(--color-everkind-green) hover:text-white transition-colors text-sm text-(--color-everkind-dark)" style="font-family: var(--font-sans);">{opt.name}</div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      {/* SECTION 3: LinkedIn */}
+      <div class="flex flex-col gap-2.5 group">
+        <label class="text-[11px] font-bold uppercase text-(--color-everkind-midgrey) group-focus-within:text-(--color-everkind-green) transition-colors ml-1" style="font-family: var(--font-sans);">LinkedIn Profile</label>
+        <input type="url" name="linkedin" required placeholder="https://linkedin.com/in/username" autocomplete="off" 
+          class="w-full bg-white border border-(--color-everkind-dark)/10 px-5 py-4 rounded-xl focus:border-(--color-everkind-green) focus:outline-none transition-all placeholder:text-(--color-everkind-midgrey)/30" 
+          style="font-family: var(--font-sans);" />
+        <p class="text-[10px] text-(--color-everkind-green) font-bold uppercase ml-1" style="font-family: var(--font-sans);">* Must be a valid secure URL (https://)</p>
+      </div>
+
+      {/* SECTION 4: File Upload */}
+      <div class="flex flex-col gap-3">
+        <label class="text-[11px] font-bold uppercase text-(--color-everkind-midgrey) ml-1" style="font-family: var(--font-sans);">CV / Resume Submission</label>
+        <div class="relative w-full">
+            <input type="file" id="resume-upload" accept=".pdf" required class="hidden" />
+            <label for="resume-upload" id="fileLabel" class="flex flex-col items-center justify-center w-full bg-white border-2 border-dashed border-(--color-everkind-dark)/10 hover:border-(--color-everkind-green)/40 p-12 rounded-2xl cursor-pointer transition-all group">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-(--color-everkind-green) mb-4 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg>
+                <span class="text-sm font-medium text-(--color-everkind-dark)" style="font-family: var(--font-sans);">Select PDF from your device</span>
+                <div class="flex items-center gap-4 mt-3">
+                    <span class="text-[10px] text-(--color-everkind-green) font-bold uppercase px-2 py-1 bg-(--color-everkind-green)/5 rounded" style="font-family: var(--font-sans);">PDF ONLY</span>
+                    <span class="text-[10px] text-(--color-everkind-green) font-bold uppercase px-2 py-1 bg-(--color-everkind-green)/5 rounded" style="font-family: var(--font-sans);">MAX 5MB</span>
+                </div>
+            </label>
+        </div>
+      </div>
+
+      {/* Submit Button - Didot, Large, No Tracking */}
+      <div class="pt-6">
+        <button type="submit" id="submit-btn" class="group w-full inline-flex items-center justify-center gap-5 px-10 py-6 bg-(--color-everkind-green) text-white rounded-2xl text-2xl md:text-3xl font-normal hover:bg-(--color-everkind-dark) transition-all duration-500 active:scale-[0.98] shadow-xl shadow-(--color-everkind-green)/10" style="font-family: var(--font-serif);">
+          Submit Application
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 transition-transform duration-300 group-hover:translate-x-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </button>
+        <p id="status-msg" class="mt-6 text-center text-xs font-bold uppercase h-4 transition-opacity duration-300 opacity-0" style="font-family: var(--font-sans);"></p>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+  /* Custom scrollbar for the dropdown menu */
+  .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--color-everkind-dark)/10; border-radius: 10px; }
+
+  /* Focus and state styles */
+  .select-trigger:focus {
+    border-color: var(--color-everkind-green);
+    box-shadow: 0 0 0 1px var(--color-everkind-green);
+    outline: none;
+  }
+</style>
+
+<script>
+  // 1. DROPDOWN LOGIC
+  document.querySelectorAll('.custom-select-container').forEach(container => {
+    const trigger = container.querySelector('.select-trigger');
+    const optionsMenu = container.querySelector('.select-options');
+    const hiddenInput = container.querySelector('input[type="hidden"]') as HTMLInputElement;
+    const triggerText = trigger?.querySelector('span');
+    const arrow = trigger?.querySelector('svg');
+
+    trigger?.addEventListener('click', () => {
+      const isOpen = !optionsMenu?.classList.contains('opacity-0');
+      
+      // Close others
+      document.querySelectorAll('.select-options').forEach(el => el.classList.add('opacity-0', 'pointer-events-none', 'translate-y-2'));
+      document.querySelectorAll('.select-trigger svg').forEach(el => el.classList.remove('rotate-180'));
+
+      if (!isOpen) {
+        optionsMenu?.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-2');
+        arrow?.classList.add('rotate-180');
+      }
+    });
+
+    container.querySelectorAll('.option-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const val = item.getAttribute('data-value');
+        if (val && hiddenInput && triggerText) {
+          hiddenInput.value = val;
+          triggerText.textContent = val;
+          triggerText.classList.replace('text-(--color-everkind-midgrey)/50', 'text-(--color-everkind-dark)');
+          optionsMenu?.classList.add('opacity-0', 'pointer-events-none', 'translate-y-2');
+          arrow?.classList.remove('rotate-180');
+        }
+      });
+    });
+  });
+
+  window.addEventListener('click', (e) => {
+    if (!(e.target as Element).closest('.custom-select-container')) {
+      document.querySelectorAll('.select-options').forEach(el => el.classList.add('opacity-0', 'pointer-events-none', 'translate-y-2'));
+      document.querySelectorAll('.select-trigger svg').forEach(el => el.classList.remove('rotate-180'));
+    }
+  });
+
+  // 2. FORM SUBMISSION PIPELINE
+  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzEDfO1JBMYX0XmBGKPi3UIziC7KaY5sdYphNz8FuGK80uMIsf7QQ4hUf3kej_F-4pBsg/exec';
+  const form = document.getElementById('notion-form') as HTMLFormElement;
+  const fileInput = document.getElementById('resume-upload') as HTMLInputElement;
+  const fileLabel = document.getElementById('fileLabel');
+  const btn = document.getElementById('submit-btn') as HTMLButtonElement;
+  const status = document.getElementById('status-msg');
+
+  fileInput?.addEventListener('change', () => {
+    if (fileInput.files?.length && fileLabel) {
+      fileLabel.querySelector('span')!.textContent = fileInput.files[0].name;
+    }
+  });
+
+  const readFileAsBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (e) => reject(e);
+      reader.readAsDataURL(file);
+    });
+  };
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!btn || !status) return;
+    btn.disabled = true;
+    
+    const file = fileInput.files?.[0];
+    if (!file) {
+      status.style.opacity = '1';
+      status.textContent = 'PLEASE SELECT A RESUME PDF';
+      status.style.color = '#b91c1c';
+      btn.disabled = false;
+      return;
+    }
+
+    btn.innerHTML = 'Uploading...';
+    status.style.opacity = '1';
+    status.textContent = 'SECURELY UPLOADING RESUME';
+    status.style.color = 'var(--color-everkind-midgrey)';
+
+    try {
+      const base64Data = await readFileAsBase64(file);
+      const driveRes = await fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
+        body: JSON.stringify({ filename: file.name, mimeType: file.type, base64: base64Data })
+      });
+
+      if (!driveRes.ok) {
+        throw new Error(`Resume upload failed (${driveRes.status})`);
+      }
+
+      const driveText = await driveRes.text();
+      let driveResult;
+
+      try {
+        driveResult = JSON.parse(driveText);
+      } catch {
+        throw new Error('Resume upload service returned an invalid response');
+      }
+
+      if (!driveResult?.success || !driveResult?.url) {
+        throw new Error('Resume upload failed');
+      }
+
+      btn.innerHTML = 'Syncing...';
+      status.textContent = 'CONNECTING TO DATABASE';
+
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+      data.resume = driveResult.url;
+      data.resumeFilename = file.name;
+
+      const notionRes = await fetch('/api/submit-application', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      if (notionRes.ok) {
+        status.textContent = "SUCCESSFULLY SUBMITTED";
+        status.style.color = "var(--color-everkind-green)";
+        form.reset();
+        if(fileLabel) fileLabel.querySelector('span')!.textContent = "Select PDF from your device";
+      } else {
+        throw new Error('Notion Error');
+      }
+      
+    } catch (err) {
+      status.textContent = "SUBMISSION FAILED";
+      status.style.color = "#b91c1c";
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = 'Submit Application';
+    }
+  });
+</script>

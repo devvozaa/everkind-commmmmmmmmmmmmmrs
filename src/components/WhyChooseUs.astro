@@ -1,0 +1,145 @@
+---
+import lineartIllustration from '../assets/IllustrationLineArt.svg';
+
+const items = [
+  {
+    id:    1,
+    label: 'Preventive Health',
+    body:  'We formulate for the long game — products that support your body\'s natural defences before problems arise, not after.',
+  },
+  {
+    id:    2,
+    label: 'Nature-powered',
+    body:  'Every ingredient is chosen because nature put it there for a reason. No fillers, no shortcuts — just the earth\'s best, concentrated.',
+  },
+  {
+    id:    3,
+    label: 'Science-backed',
+    body:  'Traditional wisdom meets rigorous research. Our formulas are validated so you can trust what you\'re putting in your body.',
+  },
+];
+---
+
+<section class="w-full bg-white px-6 sm:px-12 md:px-16 lg:px-24 py-20 md:py-28">
+
+  <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+
+    {/* LEFT: headline + accordion */}
+    <div class="flex flex-col gap-3">
+
+      <p
+        class="text-4xl sm:text-5xl leading-[1.1] tracking-tight mb-6"
+        style="font-family: var(--font-serif); color: var(--color-everkind-dark);"
+      >
+        Your Wellness,<br/>
+        <span style="color: var(--color-everkind-green);">Our Wisdom.</span>
+      </p>
+
+      {items.map((item) => (
+        <div
+          class="accordion-item rounded-2xl overflow-hidden"
+          data-item={item.id}
+          style="box-shadow: 0px 4px 0px #000000;"
+        >
+          <button
+            class="accordion-trigger w-full flex items-center justify-between gap-4 px-6 py-5 text-left transition-colors duration-200"
+            style="background-color: var(--color-everkind-lightgrey);"
+            data-id={item.id}
+            aria-expanded="false"
+          >
+            <span
+              class="text-lg sm:text-xl tracking-tight"
+              style="font-family: var(--font-serif); color: var(--color-everkind-dark);"
+            >
+              {item.label}
+            </span>
+
+            <span
+              class="accordion-icon shrink-0 flex items-center justify-center w-8 h-8 rounded-full transition-all duration-300"
+              style="background-color: var(--color-everkind-dark);"
+            >
+              <svg class="plus-icon" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M7 2v10M2 7h10" stroke="var(--color-everkind-bg)" stroke-width="1.75" stroke-linecap="round"/>
+              </svg>
+              <svg class="minus-icon" style="display:none;" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M2 7h10" stroke="var(--color-everkind-bg)" stroke-width="1.75" stroke-linecap="round"/>
+              </svg>
+            </span>
+          </button>
+
+          <div
+            class="accordion-body overflow-hidden"
+            style="max-height: 0; transition: max-height 400ms cubic-bezier(0.4, 0, 0.2, 1);"
+          >
+            <div
+              class="px-6 py-5"
+              style="background-color: var(--color-everkind-green); border-top: 1.5px solid #00000015;"
+            >
+              <p
+                class="text-sm sm:text-base leading-relaxed"
+                style="font-family: var(--font-sans); color: var(--color-everkind-bg); opacity: 0.9;"
+              >
+                {item.body}
+              </p>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    {/* RIGHT: lineart SVG directly on white */}
+    <div class="relative flex items-center justify-center">
+      <img
+        src={lineartIllustration.src}
+        alt="Everkind illustration"
+        class="w-full max-w-xl object-contain select-none"
+      />
+    </div>
+
+  </div>
+</section>
+
+<script>
+  let openId: number | null = 1;
+
+  function openItem(id: number) {
+    document.querySelectorAll<HTMLElement>('.accordion-item').forEach((item) => {
+      const itemId = parseInt(item.dataset.item!);
+      const body   = item.querySelector<HTMLElement>('.accordion-body')!;
+      const btn    = item.querySelector<HTMLButtonElement>('.accordion-trigger')!;
+      const plus   = item.querySelector<SVGElement>('.plus-icon')!;
+      const minus  = item.querySelector<SVGElement>('.minus-icon')!;
+
+      if (itemId === id) {
+        body.style.maxHeight = body.scrollHeight + 'px';
+        btn.setAttribute('aria-expanded', 'true');
+        plus.style.display  = 'none';
+        minus.style.display = 'block';
+      } else {
+        body.style.maxHeight = '0';
+        btn.setAttribute('aria-expanded', 'false');
+        plus.style.display  = 'block';
+        minus.style.display = 'none';
+      }
+    });
+  }
+
+  openItem(1);
+
+  document.querySelectorAll<HTMLButtonElement>('.accordion-trigger').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id!);
+      if (openId === id) {
+        const body = btn.closest('.accordion-item')!.querySelector<HTMLElement>('.accordion-body')!;
+        body.style.maxHeight = '0';
+        btn.setAttribute('aria-expanded', 'false');
+        btn.querySelector<SVGElement>('.plus-icon')!.style.display  = 'block';
+        btn.querySelector<SVGElement>('.minus-icon')!.style.display = 'none';
+        openId = null;
+      } else {
+        openId = id;
+        openItem(id);
+      }
+    });
+  });
+</script>

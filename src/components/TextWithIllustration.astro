@@ -1,0 +1,56 @@
+---
+// src/components/TextWithIllustration.astro
+
+export interface Props {
+  heading: string;
+  description: string;
+  imagePath: string;
+  imageAlt?: string;
+  imageReversed?: boolean; 
+}
+
+const { 
+  heading, 
+  description, 
+  imagePath, 
+  imageAlt = "Section Illustration",
+  imageReversed = false 
+} = Astro.props;
+
+// Dynamically apply the flex-row-reverse class if the prop is true
+const layoutDirection = imageReversed ? "lg:flex-row-reverse" : "lg:flex-row";
+const imageAlignment = imageReversed ? "lg:justify-start" : "lg:justify-end";
+---
+
+<section class="w-full bg-(--color-everkind-bg) py-20 md:py-32 px-6 sm:px-12 lg:px-24 relative z-10 overflow-hidden">
+  <div class={`max-w-6xl mx-auto w-full flex flex-col items-center justify-between gap-12 lg:gap-20 ${layoutDirection}`}>
+    
+    {/* Text Column */}
+    <div class="w-full lg:w-1/2 flex flex-col gap-6 md:gap-8 z-10">
+      {/* set:html allows you to pass <br /> tags through the prop for exact line-break control */}
+      <h2 
+        class="text-5xl md:text-6xl lg:text-7xl text-(--color-everkind-dark) leading-[1.05] tracking-tight font-normal" 
+        style="font-family: var(--font-serif);"
+        set:html={heading}
+      />
+      
+      <p 
+        class="text-lg md:text-xl text-(--color-everkind-darkgrey) leading-relaxed max-w-lg" 
+        style="font-family: var(--font-sans);"
+      >
+        {description}
+      </p>
+    </div>
+
+    {/* Illustration Column */}
+    <div class={`w-full lg:w-1/2 flex justify-center relative ${imageAlignment}`}>
+      <img 
+        src={imagePath} 
+        alt={imageAlt} 
+        class="w-full max-w-md lg:max-w-full h-auto object-contain drop-shadow-sm"
+        loading="eager"
+      />
+    </div>
+
+  </div>
+</section>

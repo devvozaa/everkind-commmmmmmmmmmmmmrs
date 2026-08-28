@@ -1,0 +1,113 @@
+---
+// src/pages/blog.astro
+import Layout from '../layouts/Layout.astro';
+import TextMain from '../components/TextMain.astro';
+import BlogCard from '../components/BlogCard.astro';
+import { Client } from '@notionhq/client';
+
+interface BlogPost {
+  id: string;
+  title: string;
+  excerpt: string;
+  date: string;
+  category: string;
+  imageUrl: string;
+  slug: string | null;
+  externalLink: string | null;
+}
+
+const notion = new Client({ auth: import.meta.env.NOTION_BLOG_SECRET });
+const dataSourceId = import.meta.env.NOTION_BLOG_DATA_SOURCE_ID;
+
+let journalPosts: BlogPost[] = [];
+let pressPosts: BlogPost[] = [];
+
+try {
+  const response = await (notion as any).dataSources.query({
+    data_source_id: dataSourceId,
+    filter: {
+      property: 'Status',
+      status: { equals: 'Published' },
+    },
+    sorts: [
+      { property: 'Published Date', direction: 'descending' },
+    ],
+  });
+
+  const allPosts: BlogPost[] = response.results.map((page: any) => {
+    const props = page.properties;
+    const getPlainText = (property: any) => property?.rich_text?.[0]?.plain_text || property?.title?.[0]?.plain_text || '';
+
+    return {
+      id: page.id,
+      title: getPlainText(props.Name) || 'Untitled',
+      excerpt: getPlainText(props.Excerpt),
+      date: props['Published Date']?.date?.start 
+        ? new Date(props['Published Date'].date.start).toLocaleDateString('en-US', {
+            month: 'short', day: '2-digit', year: 'numeric'
+          })
+        : 'No Date',
+      category: props.Category?.select?.name || 'Uncategorized',
+      imageUrl: page.cover?.external?.url || page.cover?.file?.url || 'https://via.placeholder.com/1200x800',
+      slug: getPlainText(props.Slug) || null,
+      externalLink: props['External Link']?.url || props['External Link']?.email || null,
+    };
+  });
+
+  journalPosts = allPosts.filter(post => post.category === 'Journal');
+  pressPosts = allPosts.filter(post => post.category === 'Press');
+
+} catch (e: unknown) {
+  if (e instanceof Error) {
+    console.error("Notion Blog Fetch Error:", e.message);
+  }
+}
+---
+
+<Layout title="Writing | Everkind Consumer">
+  
+  <TextMain 
+    headline="Writing"
+    subtext=""
+    headlineColor="text-(--color-everkind-dark)"
+    parallaxSpeed="0.1"
+  />
+
+  <section class="w-full bg-(--color-everkind-bg) px-6 sm:px-12 md:px-16 lg:px-24 pb-0 relative z-10">
+    <div class="max-w-6xl mx-auto w-full flex flex-col gap-24 md:gap-32">
+      
+      {/* SECTION 1: THE JOURNAL */}
+      <div class="flex flex-col gap-12">
+        <div class="flex items-end justify-between border-b border-(--color-everkind-dark)/10 pb-6">
+            <h2 class="text-4xl md:text-5xl font-normal text-(--color-everkind-dark)" style="font-family: var(--font-serif);">
+              Blog &amp; Happenings
+            </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-12">
+          {journalPosts.map((post: BlogPost) => (
+            <BlogCard post={post} />
+          ))}
+        </div>
+      </div>
+
+      {/* SECTION 2: IN THE PRESS */}
+      <div class="flex flex-col gap-12">
+        <div class="flex items-end justify-between border-b border-(--color-everkind-dark)/10 pb-6">
+            <h2 class="text-4xl md:text-5xl font-normal text-(--color-everkind-dark)" style="font-family: var(--font-serif);">
+              Press 
+            </h2>
+            <span class="hidden sm:block text-[10px] uppercase tracking-widest text-(--color-everkind-midgrey) font-bold" style="font-family: var(--font-sans);"
+            </span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-12">
+          {pressPosts.map((post: BlogPost) => (
+            <BlogCard post={post} />
+          ))}
+        </div>
+      </div>
+
+    </div>
+  </section>
+</Layout>

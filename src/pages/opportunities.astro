@@ -1,0 +1,225 @@
+---
+// src/pages/opportunities.astro
+import Layout from '../layouts/Layout.astro';
+
+ 
+import { Client } from '@notionhq/client';
+
+export const prerender = false; 
+
+const notion = new Client({ auth: import.meta.env.NOTION_CAREERS_DB_SECRET }); 
+const careersDataSourceId = import.meta.env.NOTION_CAREERS_DATA_SOURCE_ID; 
+
+let openings: any[] = [];
+
+try {
+  const response = await (notion as any).dataSources.query({
+    data_source_id: careersDataSourceId,
+    filter: {
+      property: 'Status',
+      status: {
+        equals: 'Open' 
+      }
+    }
+  });
+
+  openings = response.results.map((page: any, index: number) => {
+    const title = page.properties.Name?.title?.[0]?.plain_text || 'Untitled Role';
+    // Mapping precisely to your 'Summary' column
+    const description = page.properties.Summary?.rich_text?.[0]?.plain_text || 'Description unavailable.';
+    const slug = page.properties.Slug?.rich_text?.[0]?.plain_text || page.id;
+    
+    const id = String(index + 1).padStart(2, '0');
+
+    return { id, title, description, slug };
+  });
+
+} catch (e) {
+  console.error("Failed to fetch Jobs from Notion data source:", e);
+}
+---
+
+<Layout title="Opportunities | Everkind">
+  
+  
+
+  <section class="opportunities-hero w-full bg-(--color-everkind-bg) px-6 sm:px-12 md:px-16 lg:px-24 pt-24 pb-8 md:pt-32 md:pb-12">
+    <div class="max-w-6xl mx-auto">
+      <p class="opportunities-eyebrow">OPPORTUNITIES</p>
+      <h1 class="opportunities-title">
+        Build the Future<br /> With Us
+      </h1>
+      <p class="opportunities-description">
+        We are always looking for problem-solvers. If you care deeply about creating an impact and building meaningful consumer brands, we would love to hear from you.
+      </p>
+    </div>
+  </section>
+
+  <section class="current-openings-heading w-full bg-(--color-everkind-bg) py-0 px-6 sm:px-12 lg:px-24 relative z-10">
+    <div class="max-w-6xl mx-auto w-full flex flex-col sm:flex-row items-stretch sm:items-center justify-center md:justify-start gap-3 sm:gap-5">
+      <div class="bg-(--color-everkind-green) w-full sm:w-auto px-5 py-3 md:px-6 md:py-2.5 rounded-lg shrink-0 text-center">
+        <h2 class="text-xl md:text-2xl text-white font-normal tracking-tight" style="font-family: var(--font-serif);">
+          Current Openings
+        </h2>
+      </div>
+      <p class="text-base sm:text-lg text-(--color-everkind-darkgrey) leading-snug max-w-none sm:max-w-xs text-center sm:text-left" style="font-family: var(--font-sans);">
+        Find your perfect role.
+      </p>
+    </div>
+  </section>
+
+  <section class="w-full bg-(--color-everkind-bg) pt-8 md:pt-12 pb-24 md:pb-32 px-6 sm:px-12 lg:px-24 relative z-10">
+    <div class="max-w-4xl mx-auto w-full flex flex-col gap-5" data-parallax="0.02">
+      
+      {openings.length === 0 ? (
+        <p class="text-center text-(--color-everkind-midgrey) text-lg py-10" style="font-family: var(--font-sans);">
+          We currently have no open positions. Please check back later!
+        </p>
+      ) : (
+        openings.map((job) => (
+          <div 
+            class="job-accordion group border border-(--color-everkind-dark) rounded-[2.5rem] bg-(--color-everkind-lightgrey) text-(--color-everkind-dark) transition-colors duration-500 data-[expanded=true]:bg-(--color-everkind-green) data-[expanded=true]:text-white data-[expanded=true]:border-(--color-everkind-green) shadow-[0_8px_0_rgba(0,0,0,1)]"
+            data-expanded="false"
+          >
+            {/* Header Toggle */}
+            <button class="job-trigger w-full flex items-center justify-between gap-4 px-5 py-5 sm:px-8 sm:py-6 md:py-8 cursor-pointer focus:outline-none">
+              <div class="min-w-0 flex items-center gap-4 sm:gap-6 md:gap-10">
+                <span class="text-4xl md:text-5xl font-medium" style="font-family: var(--font-sans);">{job.id}</span>
+                <span class="text-base sm:text-xl md:text-2xl font-medium text-left leading-tight" style="font-family: var(--font-sans);">{job.title}</span>
+              </div>
+              
+              {/* Morphing Icon Container */}
+              <div class="w-10 h-10 md:w-12 md:h-12 rounded-full border border-current flex items-center justify-center shrink-0 transition-colors duration-500 bg-transparent group-data-[expanded=true]:bg-white group-data-[expanded=true]:text-(--color-everkind-green) relative overflow-hidden">
+                {/* Plus Icon (Fades and rotates out) */}
+                <svg class="w-5 h-5 absolute transition-all duration-500 transform group-data-[expanded=true]:rotate-180 group-data-[expanded=true]:opacity-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
+                {/* Minus Icon (Rotates and fades in) */}
+                <svg class="w-5 h-5 absolute transition-all duration-500 transform -rotate-180 opacity-0 group-data-[expanded=true]:rotate-0 group-data-[expanded=true]:opacity-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M20 12H4"></path></svg>
+              </div>
+            </button>
+
+            {/* Animated Body Container using grid-rows trick */}
+            <div class="grid grid-rows-[0fr] transition-all duration-500 ease-in-out group-data-[expanded=true]:grid-rows-[1fr]">
+              <div class="overflow-hidden">
+                <div class="px-8 pb-8 pt-2">
+                  <hr class="border-t border-current opacity-30 mb-6" />
+                  
+                  <p class="text-base md:text-lg leading-relaxed opacity-90 max-w-3xl" style="font-family: var(--font-sans);">
+                    {job.description}
+                  </p>
+                  
+                  {/* Rectangular Buttons with Vertical Shadow */}
+                  <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mt-8 sm:mt-10">
+                    {/* Outline Button - Explicitly white on dark-green */}
+                    <a 
+                      href={`/careers/${job.slug}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="w-full sm:w-auto text-center px-6 sm:px-8 py-3.5 rounded-lg border border-white text-white hover:bg-white hover:text-(--color-everkind-green) transition-all duration-300 text-sm font-semibold tracking-wide shadow-[0_6px_0_rgba(0,0,0,0.1)] hover:shadow-[0_8px_0_rgba(0,0,0,0.15)] hover:-translate-y-0.5"
+                      style="font-family: var(--font-sans);"
+                    >
+                      Detailed Description
+                    </a>
+                    
+                    {/* Solid Button */}
+                    <a 
+                      href={`/applicationform`} 
+                      class="w-full sm:w-auto text-center px-6 sm:px-8 py-3.5 rounded-lg bg-white text-(--color-everkind-green) hover:bg-(--color-everkind-lightgrey) transition-all duration-300 text-sm font-semibold tracking-wide shadow-[0_6px_0_rgba(0,0,0,0.1)] hover:shadow-[0_8px_0_rgba(0,0,0,0.15)] hover:-translate-y-0.5"
+                      style="font-family: var(--font-sans);"
+                    >
+                      Apply Now
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))
+      )}
+  </div>
+</section>
+
+</Layout>
+
+<style>
+  .opportunities-eyebrow {
+    color: var(--color-everkind-green);
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .opportunities-title {
+    color: var(--color-everkind-dark);
+    font-family: var(--font-serif);
+    font-size: clamp(3.5rem, 8vw, 8rem);
+    font-weight: 400;
+    letter-spacing: -0.065em;
+    line-height: 0.9;
+    margin-top: 0.75rem;
+  }
+
+  .opportunities-description {
+    color: var(--color-everkind-midgrey);
+    font-family: var(--font-sans);
+    font-size: clamp(1rem, 1.45vw, 1.3rem);
+    line-height: 1.5;
+    margin-top: 1.25rem;
+    max-width: 42rem;
+  }
+</style>
+
+<script>
+  const initAccordions = () => {
+    const accordions = document.querySelectorAll('.job-accordion');
+
+    accordions.forEach(acc => {
+      const trigger = acc.querySelector('.job-trigger');
+      if (!trigger) return;
+
+      (trigger as HTMLElement).onclick = () => {
+        const isExpanded = acc.getAttribute('data-expanded') === 'true';
+
+        // Close others
+        accordions.forEach(otherAcc => {
+          if (otherAcc !== acc) {
+            otherAcc.setAttribute('data-expanded', 'false');
+          }
+        });
+
+        // Toggle current
+        acc.setAttribute('data-expanded', isExpanded ? 'false' : 'true');
+      };
+    });
+  };
+
+  initAccordions();
+  document.addEventListener('astro:page-load', initAccordions);
+</script>
+
+{/* 3. Global Lenis Smooth Scroll, Parallax, & Routing Engine */}
+<script>
+  import Lenis from 'lenis';
+  const lenis = new Lenis({
+    autoRaf: true,
+    duration: 1.5,
+    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    smoothWheel: true,
+  });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const parallaxElements = document.querySelectorAll('[data-parallax]');
+    lenis.on('scroll', (e) => {
+      parallaxElements.forEach((el) => {
+        const speed = parseFloat(el.getAttribute('data-parallax') || '0.1');
+        (el as HTMLElement).style.transform = `translateY(${e.scroll * speed}px)`;
+      });
+    });
+  });
+  
+  function raf(time: number) {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
+  }
+</script>

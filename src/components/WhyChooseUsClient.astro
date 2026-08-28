@@ -1,0 +1,130 @@
+\---
+import womanIllustration from '../assets/IllustrationWoman.png';
+
+const values = [
+  {
+    id: 1,
+    label:     'Preventive Health',
+    icon:      'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z',
+    headline: 'Preventive Health',
+    body:      'We formulate for the long game — products that support your body\'s natural defences before problems arise, not after.',
+    top:  '50%',
+    left: '23.5%',
+  },
+  {
+    id: 2,
+    label:     'Nature-powered',
+    icon:      'M12 2a9 9 0 010 18A9 9 0 0112 2zm0 2c-1.5 2-4 4-4 7a4 4 0 008 0c0-3-2.5-5-4-7z',
+    headline: 'Nature-powered',
+    body:      'Every ingredient is chosen because nature put it there for a reason. No fillers, no shortcuts — just the earth\'s best, concentrated.',
+    top:  '46.5%',
+    left: '75%',
+  },
+  {
+    id: 3,
+    label:     'Science-backed',
+    icon:      'M9 3H7a2 2 0 00-2 2v1h10V5a2 2 0 00-2-2h-2m-2 0V1m2 2V1M5 9v10a2 2 0 002 2h6a2 2 0 002-2V9',
+    headline: 'Science-backed',
+    body:      'Traditional wisdom meets rigorous research. Our formulas are validated so you can trust what you\'re putting in your body.',
+    top:  '65%',
+    left: '78%',
+  },
+];
+---
+
+<section class="w-full bg-white px-6 sm:px-12 md:px-16 lg:px-24 py-0 md:py-2" style="margin-top: 0;">
+  
+  <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-0 items-center">
+
+    {/* LEFT: Text Stack */}
+    <div class="grid" style="grid-template-columns: 1fr;">
+
+      {values.map((v) => (
+        <div
+          id={`value-panel-${v.id}`}
+          class="value-panel flex flex-col items-center text-center transition-all duration-500"
+          style={`grid-area: 1 / 1 / 2 / 2; opacity: ${v.id === 1 ? '1' : '0'}; transform: translateY(0); pointer-events: ${v.id === 1 ? 'auto' : 'none'}; z-index: ${v.id === 1 ? '10' : '1'};`}
+        >
+
+          <h3
+            class="text-4xl sm:text-5xl leading-tight tracking-tight mb-4"
+            style="font-family: var(--font-serif); color: var(--color-everkind-dark);"
+          >
+            {v.headline}
+          </h3>
+
+          <div class="w-10 h-px mb-4 opacity-30" style="background-color: var(--color-everkind-dark);" />
+
+          <p
+            class="text-base sm:text-lg leading-relaxed opacity-70 max-w-sm"
+            style="font-family: var(--font-sans); color: var(--color-everkind-dark);"
+          >
+            {v.body}
+          </p>
+        </div>
+      ))}
+    </div>
+
+    {/* RIGHT: Illustration */}
+    <div class="relative w-full aspect-square md:-ml-8" style="max-width: none;">
+      <img
+  src={womanIllustration.src}
+  alt="Illustration"
+  class="w-full h-full object-contain select-none pointer-events-none"
+/>
+
+      {values.map((v) => (
+        <button
+          data-hotspot={v.id}
+          class="hotspot-btn absolute z-10 lg:z-50 flex items-center gap-2 group cursor-pointer"
+          style={`top: ${v.top}; left: ${v.left}; transform: translate(-50%, -50%);`}
+        >
+          <span class="absolute inline-flex w-8 h-8 rounded-full opacity-40 animate-ping"
+            style="background-color: var(--color-everkind-green);"></span>
+          <span
+            id={`hotspot-dot-${v.id}`}
+            class="relative flex items-center justify-center w-8 h-8 rounded-full text-xs font-medium transition-all group-hover:scale-125"
+            style={`background-color: var(--color-everkind-green); color: var(--color-everkind-bg); box-shadow: 0 3px 0 #000; ${v.id === 1 ? 'transform: scale(1.2);' : ''}`}
+          >
+            {v.id}
+          </span>
+        </button>
+      ))}
+    </div>
+
+  </div>
+</section>
+
+<script>
+  let activeId: number = 1;
+
+  function updateDisplay(id: number) {
+    const panels = document.querySelectorAll('.value-panel');
+    const dots = document.querySelectorAll('[id^="hotspot-dot-"]');
+
+    panels.forEach((panel) => {
+      const panelId = panel.id.replace('value-panel-', '');
+      const isMatch = panelId === String(id);
+      (panel as HTMLElement).style.opacity = isMatch ? '1' : '0';
+      (panel as HTMLElement).style.transform = isMatch ? 'translateY(0)' : 'translateY(10px)';
+      (panel as HTMLElement).style.pointerEvents = isMatch ? 'auto' : 'none';
+      (panel as HTMLElement).style.zIndex = isMatch ? '10' : '1';
+    });
+
+    dots.forEach((dot) => {
+      const dotId = dot.id.replace('hotspot-dot-', '');
+      (dot as HTMLElement).style.transform = dotId === String(id) ? 'scale(1.2)' : 'scale(1)';
+    });
+  }
+
+  document.querySelectorAll('[data-hotspot]').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const id = parseInt((btn as HTMLElement).dataset.hotspot!);
+      if (id !== activeId) {
+        activeId = id;
+        updateDisplay(activeId);
+      }
+    });
+  });
+</script>

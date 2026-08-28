@@ -1,0 +1,116 @@
+<section 
+  class="relative w-full overflow-hidden bg-[--color-everkind-lightgrey]"
+  style="height: 100dvh; min-height: 580px; width: 100%; position: relative;" 
+  id="hero"
+>
+  {/* ── TEXT ── */}
+  {/* Centering via width 100% + text-center is the most stable way to prevent horizontal jumps */}
+  <div
+    data-parallax="0.15"
+    class="absolute z-10 top-20 md:top-28 lg:top-32 left-0 w-full flex flex-col items-center justify-center text-center pointer-events-none px-6"
+  >
+    <h1 
+      class="text-[--color-everkind-dark] font-normal leading-[1.1] tracking-tight"
+      style="font-family: var(--font-serif); width: 100%; max-width: 900px;"
+    >
+      <span class="block text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl">
+        Thoughtful consumer
+      </span>
+      <span class="block text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl">
+        brands for you and
+      </span>
+      <span class="block text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl">
+        your loved ones.
+      </span>
+    </h1>
+  </div>
+
+  {/* ── LOTTIE WRAPPERS ── */}
+  {/* We wrap the players in a container that is strictly 100% of the viewport width */}
+  
+  {/* Desktop */}
+  <div
+    class="lottie-wrapper hidden lg:block absolute inset-0 z-0 pointer-events-none"
+    style="opacity: 0; transition: opacity 700ms ease;"
+  >
+    <lottie-player
+      src="/Comp_1_Sim_01.json"
+      background="transparent"
+      speed="1"
+      style="width: 100%; height: 100%; object-fit: cover;"
+      autoplay
+    ></lottie-player>
+  </div>
+
+  {/* Tablet */}
+  <div
+    class="lottie-wrapper tablet-drop hidden md:block lg:hidden absolute inset-0 z-0 pointer-events-none"
+    style="opacity: 0; transition: opacity 700ms ease; top: -50%;"
+  >
+    <lottie-player
+      src="/Comp_1_Sim_01.json"
+      background="transparent"
+      speed="1"
+      style="width: 100%; height: 100%; object-fit: cover;"
+      autoplay
+    ></lottie-player>
+  </div>
+
+  {/* Mobile */}
+  <div
+    class="lottie-wrapper block md:hidden absolute inset-0 z-0 pointer-events-none"
+    style="opacity: 0; transition: opacity 700ms ease; top: 15%;"
+  >
+    <lottie-player
+      src="/Comp_2_Sim_01.json"
+      background="transparent"
+      speed="1"
+      style="width: 100%; height: 100%; object-fit: contain;"
+      autoplay
+    ></lottie-player>
+  </div>
+</section>
+
+<style>
+  /* 1. THE ULTIMATE FIX FOR "SHIFTING LEFT" */
+  /* We lock the horizontal axis at the root level */
+  html, body {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden !important;
+    position: relative;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* 2. THE ULTIMATE FIX FOR "SCROLLING" */
+  /* Ensure the body is allowed to grow vertically */
+  body {
+    overflow-y: auto !important;
+    height: auto !important;
+  }
+
+  @keyframes tabletFastDrop {
+    from { transform: translateY(0); }
+    to   { transform: translateY(45vh); }
+  }
+  .tablet-drop {
+    animation: tabletFastDrop 1.8s linear forwards;
+    animation-play-state: paused;
+  }
+</style>
+
+<script src="https://unpkg.com/@lottiefiles/lottie-player@2.0.8/dist/lottie-player.js" is:inline></script>
+
+<script>
+  function reveal() {
+    document.querySelectorAll('.lottie-wrapper').forEach((el) => {
+      (el as HTMLElement).style.opacity = '1';
+      (el as HTMLElement).style.animationPlayState = 'running';
+    });
+  }
+  // Runs immediately on Astro page transitions
+  document.addEventListener('astro:page-load', reveal);
+  // Runs on initial browser load
+  window.addEventListener('load', reveal);
+</script>

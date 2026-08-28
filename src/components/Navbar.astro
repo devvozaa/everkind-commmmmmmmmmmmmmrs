@@ -1,0 +1,236 @@
+---
+const currentPath = Astro.url.pathname;
+
+const navLinks = [
+  { name: 'About us', href: '/about' },
+ // { name: 'Our Brands', href: '/#brands' },
+  { name: 'Opportunities', href: '/opportunities' },
+  { name: 'Investors', href: '/investors' },
+  { name: 'Writing', href: '/blog' }
+];
+import EverkindLogo from '../assets/EverkindLogo.svg';
+---
+
+<header 
+  class="fixed top-0 left-0 w-full z-50"
+  style="transform: translateY(-100%); transition: transform 500ms cubic-bezier(0.16,1,0.3,1), background-color 300ms ease, backdrop-filter 300ms ease;"
+>
+  <nav class="relative z-50 flex items-center justify-between w-full max-w-400 mx-auto px-6 py-6 sm:px-12 md:px-16 lg:px-24" id="navbar-bg">
+    
+    {/* LOGO AREA */}
+    <a 
+    href="/" 
+    class="relative z-50"
+    aria-label="Everkind Home"
+  >
+    <img 
+      src={EverkindLogo.src} 
+      alt="Everkind" 
+      class="h-8 w-auto invert"
+    />
+  </a>
+
+
+    {/* DESKTOP NAVIGATION LINKS & CTA */}
+    <div class="hidden lg:flex items-center gap-5 xl:gap-8">
+      <div class="flex items-center gap-5 xl:gap-8">
+        {navLinks.map((link) => (
+<a 
+            href={link.href} 
+            data-active={currentPath === link.href ? 'true' : 'false'}
+            class="nav-link relative text-[15px] lg:text-[16px] font-bold text-(--color-everkind-dark) hover:text-(--color-everkind-darkgrey) transition-colors duration-300 after:content-[''] after:absolute after:left-0 after:-bottom-1.5 after:w-full after:h-px after:bg-(--color-everkind-green) after:scale-x-0 after:origin-left after:transition-transform after:duration-300 after:ease-out hover:after:scale-x-100"
+            style="font-family: var(--font-sans);"
+          >
+            {link.name}
+          </a>
+        ))}
+      </div>
+      <a 
+                href="/contact"
+        data-active={currentPath === '/contact' ? 'true' : 'false'}
+        class="nav-link group relative ml-1 px-5 py-2.5 text-[15px] lg:text-[16px] font-bold text-(--color-everkind-dark) border border-(--color-everkind-dark) rounded-xl hover:bg-(--color-everkind-dark) hover:text-white transition-all duration-300 after:content-[''] after:absolute after:left-4 after:right-4 after:-bottom-1 after:h-px after:bg-(--color-everkind-green) after:scale-x-0 after:origin-center after:transition-transform after:duration-300 hover:after:scale-x-100"
+        style="font-family: var(--font-sans);"
+      >
+        Contact Us
+      </a>
+    </div>
+
+    {/* MOBILE HAMBURGER BUTTON */}
+    <button 
+      id="mobile-menu-toggle"
+      class="lg:hidden flex flex-col justify-center items-center gap-1 w-7 h-7 z-50 focus:outline-none relative"
+      aria-label="Toggle Menu"
+      aria-expanded="false"
+    >
+      <span class="w-full h-0.5 bg-(--color-everkind-dark) transition-all duration-300 origin-center" id="line-1"></span>
+      <span class="w-full h-0.5 bg-(--color-everkind-dark) transition-all duration-300 origin-center" id="line-2"></span>
+    </button>
+  </nav>
+
+  {/* MOBILE FULLSCREEN MENU OVERLAY */}
+  <div 
+    id="mobile-menu-overlay"
+    class="fixed inset-0 bg-white h-dvh w-full z-40 flex flex-col justify-start px-6 sm:px-12 pt-24 sm:pt-28 transform -translate-y-full opacity-0 pointer-events-none transition-all duration-500 ease-in-out lg:hidden"
+  >
+    <div class="flex flex-col gap-4 mt-0">
+      {navLinks.map((link, index) => (
+<a 
+          href={link.href} 
+          data-active={currentPath === link.href ? 'true' : 'false'}
+          class="nav-link mobile-link group relative w-max text-3xl sm:text-4xl font-bold text-(--color-everkind-dark) tracking-tight opacity-0 translate-y-4 transition-all duration-500 hover:text-(--color-everkind-darkgrey) after:content-[''] after:absolute after:left-0 after:-bottom-1.5 after:w-full after:h-0.5 after:bg-(--color-everkind-green) after:scale-x-0 after:origin-left after:transition-transform after:duration-300 after:ease-out hover:after:scale-x-100"
+          style={`font-family: var(--font-serif); transition-delay: ${index * 75}ms;`}
+        >
+          {link.name}
+        </a>
+      ))}
+      <a
+        href="/contact"
+        data-active={currentPath === '/contact' ? 'true' : 'false'}
+        class="nav-link mobile-link group relative mt-2 w-max px-5 py-2.5 text-2xl sm:text-3xl font-bold text-(--color-everkind-dark) border border-(--color-everkind-dark) rounded-lg opacity-0 translate-y-4 transition-all duration-500 hover:bg-(--color-everkind-dark) hover:text-white after:content-[''] after:absolute after:left-4 after:right-4 after:-bottom-1 after:h-px after:bg-(--color-everkind-green) after:scale-x-0 after:origin-center after:transition-transform after:duration-300 hover:after:scale-x-100"
+        style={`font-family: var(--font-sans); transition-delay: ${navLinks.length * 75}ms;`}
+      >
+        Contact Us
+      </a>
+    </div>
+  </div>
+</header>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const toggleBtn = document.getElementById('mobile-menu-toggle');
+    const overlay = document.getElementById('mobile-menu-overlay');
+    const line1 = document.getElementById('line-1');
+    const line2 = document.getElementById('line-2');
+    const mobileLinks = document.querySelectorAll('.mobile-link');
+    const header = document.querySelector('header');
+    const body = document.body;
+
+    let isMenuOpen = false;
+    let lastScrollY = window.scrollY;
+
+    // ── UPDATE NAVBAR STYLE ON SCROLL ──
+    const updateNavbarStyle = (currentScrollY: number) => {
+      if (currentScrollY > 0) {
+        if (header) {
+          header.style.backgroundColor = 'rgba(255,255,255,0.7)';
+          header.style.backdropFilter = 'blur(10px)';
+        }
+      } else {
+        if (header) {
+          header.style.backgroundColor = 'transparent';
+          header.style.backdropFilter = 'none';
+        }
+      }
+    };
+
+    // ── ENTRANCE ANIMATION ──
+    // ── ENTRANCE ANIMATION ──
+setTimeout(() => {
+  if (header) header.style.transform = 'translateY(0)';
+}, 100);
+
+// ── HIDE / SHOW ON SCROLL ──
+window.addEventListener('scroll', () => {
+  if (isMenuOpen) return;
+
+  const currentScrollY = window.scrollY;
+
+  if (header) {
+    if (currentScrollY <= 0) {
+      header.style.transform = 'translateY(0)';
+    } else if (currentScrollY > lastScrollY) {
+      header.style.transform = 'translateY(-100%)';
+    } else {
+      header.style.transform = 'translateY(0)';
+    }
+  }
+
+  updateNavbarStyle(currentScrollY);
+  lastScrollY = currentScrollY;
+}, { passive: true });
+
+    mobileLinks.forEach(link => {
+      const showTouchState = () => link.classList.add('is-touching');
+      const hideTouchState = () => {
+        if (link.getAttribute('data-active') !== 'true' && !link.classList.contains('is-selected')) {
+          link.classList.remove('is-touching');
+        }
+      };
+
+      link.addEventListener('click', () => link.classList.add('is-selected'));
+      link.addEventListener('pointerdown', showTouchState);
+      link.addEventListener('pointerenter', showTouchState);
+      link.addEventListener('pointerleave', hideTouchState);
+      link.addEventListener('focus', showTouchState);
+      link.addEventListener('blur', hideTouchState);
+    });
+
+    // ── MOBILE MENU TOGGLE ──
+    toggleBtn?.addEventListener('click', () => {
+      isMenuOpen = !isMenuOpen;
+      toggleBtn.setAttribute('aria-expanded', isMenuOpen.toString());
+
+      if (isMenuOpen) {
+        body.style.overflow = 'hidden';
+        // Force solid white when menu is open
+        if (header) {
+          header.style.backgroundColor = 'rgba(255,255,255,1)';
+          header.style.backdropFilter = 'none';
+          header.style.backdropFilter = 'none';
+          header.style.boxShadow = 'none';
+        }
+        overlay?.classList.remove('-translate-y-full', 'opacity-0', 'pointer-events-none');
+        overlay?.classList.add('translate-y-0', 'opacity-100', 'pointer-events-auto');
+        line1?.classList.add('rotate-45', 'translate-y-[4px]');
+        line2?.classList.add('-rotate-45', '-translate-y-[4px]');
+        setTimeout(() => {
+          mobileLinks.forEach(link => {
+            link.classList.remove('opacity-0', 'translate-y-4');
+            link.classList.add('opacity-100', 'translate-y-0');
+          });
+        }, 1000);
+      } else {
+        body.style.overflow = '';
+        // Restore correct state after closing
+        updateNavbarStyle(lastScrollY);
+        overlay?.classList.remove('translate-y-0', 'opacity-100', 'pointer-events-auto');
+        overlay?.classList.add('-translate-y-full', 'opacity-0', 'pointer-events-none');
+        line1?.classList.remove('rotate-45', 'translate-y-[4px]');
+        line2?.classList.remove('-rotate-45', '-translate-y-[4px]');
+        mobileLinks.forEach(link => {
+          link.classList.remove('opacity-100', 'translate-y-0');
+          link.classList.add('opacity-0', 'translate-y-4');
+        });
+      }
+    });
+  });
+</script>
+
+<style>
+  .nav-link[data-active="true"],
+  .nav-link.is-selected {
+    color: var(--color-everkind-green) !important;
+  }
+
+  .mobile-link::after {
+    background-color: var(--color-everkind-green) !important;
+    bottom: -0.45rem;
+    height: 2px;
+  }
+
+  .nav-link[data-active="true"]::after,
+  .nav-link.is-selected::after,
+  .nav-link.is-touching::after,
+  .mobile-link:active::after,
+  .mobile-link:focus-visible::after {
+    background-color: var(--color-everkind-green) !important;
+    transform: scaleX(1) !important;
+  }
+
+  .mobile-link.is-touching,
+  .mobile-link:active,
+  .mobile-link:focus-visible {
+    color: var(--color-everkind-green) !important;
+  }
+
+</style>

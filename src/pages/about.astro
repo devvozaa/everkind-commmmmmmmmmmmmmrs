@@ -1,0 +1,23 @@
+---
+import Layout from '../layouts/Layout.astro';
+import WhyChooseUsClient from '../components/WhyChooseUsClient.astro';
+import CTA from '../components/CTA.astro';
+---
+
+<Layout title="About Us | Everkind Consumers">
+  <main class="bg-(--color-everkind-bg) font-sans text-(--color-everkind-dark) selection:bg-(--color-everkind-green) selection:text-white">
+    <section class="w-full flex flex-col items-center justify-center px-6 pt-28 pb-12 md:pt-36 md:pb-16 text-center">
+      <h1 class="font-serif text-4xl md:text-6xl leading-[1.15] mb-10 tracking-tighter max-w-5xl">
+        Health isn't something you find in a crisis. <br />
+        <span class="italic font-light text-(--color-everkind-green)">It's something you build every single day.</span>
+      </h1>
+      <p class="max-w-2xl mx-auto text-xl md:text-[1.35rem] text-(--color-everkind-midgrey) leading-relaxed">
+        <span class="italic font-bold text-[1.375rem] md:text-[1.65rem] text-(--color-everkind-green)">ever·kind<br /></span>
+        <span>Designed around real life stages, families &amp; everything in between</span>
+      </p>
+    </section>
+
+    <WhyChooseUsClient />
+    <CTA compact />
+  </main>
+</Layout>

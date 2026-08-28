@@ -1,0 +1,26 @@
+---
+const { post } = Astro.props;
+---
+
+{post.link ? (
+  <a
+    href={post.link}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="group block w-full aspect-video overflow-hidden rounded-2xl transition-transform duration-300 hover:scale-105"
+  >
+    <img
+      src={post.imageUrl}
+      alt={post.title}
+      class="w-full h-full object-cover"
+    />
+  </a>
+) : (
+  <div class="w-full aspect-video overflow-hidden rounded-2xl bg-(--color-everkind-dark)/5">
+    <img
+      src={post.imageUrl}
+      alt={post.title}
+      class="w-full h-full object-cover"
+    />
+  </div>
+)}

@@ -1,0 +1,49 @@
+---
+import BrandCards from './BrandCards.astro';
+
+import ill1 from '../assets/Illustration1.png';
+// ↑ Add more illustrations here as you add brands
+// import ill2 from '../assets/Illustration2.svg';
+// import ill3 from '../assets/Illustration3.svg';
+
+// ── ADD / REMOVE BRANDS HERE ─────────────────────────────────
+// Themes are assigned automatically — just supply name, href, and img.
+const brands = [
+  { name: 'Herbal Wisdom™', href: 'https://theherbalwisdom.com/', img: ill1 },
+  // { name: 'Brand Two',         href: '#', img: ill2 },
+  // { name: 'Brand Three',       href: '#', img: ill3 },
+];
+// ─────────────────────────────────────────────────────────────
+---
+
+<section class="w-full bg-white px-6 sm:px-12 md:px-16 lg:px-24 py-12 md:py-18">
+
+  {/* ── SECTION HEADER ── */}
+  <div class="flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-10 max-w-6xl mx-auto">
+
+    {/* Green badge */}
+    <div class="shrink-0">
+      <span
+        class="inline-block bg-(--color-everkind-green) text-white px-6 py-3 rounded-xl text-3xl sm:text-4xl tracking-tight leading-none"
+        style="font-family: var(--font-serif);"
+      >
+        Our Brands
+      </span>
+    </div>
+
+    {/* Divider */}
+    <div class="hidden sm:block w-px h-12 bg-(--color-everkind-dark) opacity-20 shrink-0"></div>
+
+    {/* Description */}
+    <p
+      class="text-(--color-everkind-dark) text-base sm:text-lg leading-relaxed opacity-100 max-w-2xl"
+      style="font-family: var(--font-sans);"
+    >
+      Learn more about our brands.
+    </p>
+
+  </div>
+
+  <BrandCards brands={brands} />
+
+</section>

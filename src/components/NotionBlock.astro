@@ -1,0 +1,78 @@
+---
+// src/components/NotionBlock.astro
+const { block, depth = 0 } = Astro.props;
+
+const renderRichText = (richTextArr: any[]) => {
+  if (!richTextArr || !richTextArr.length) return '';
+  return richTextArr.map((span) => {
+    let text = span.plain_text || '';
+    text = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const { bold, italic, underline, code } = span.annotations || {};
+
+    if (bold)      text = `<strong class="font-bold text-(--color-everkind-dark)">${text}</strong>`;
+    if (italic)    text = `<em class="italic">${text}</em>`;
+    if (underline) text = `<u class="underline underline-offset-4 decoration-(--color-everkind-green)/30">${text}</u>`;
+    if (code)      text = `<code class="bg-(--color-everkind-green)/10 text-(--color-everkind-green) px-1.5 py-0.5 rounded text-sm font-mono">${text}</code>`;
+
+    if (span.href) {
+      text = `<a href="${span.href}" class="text-(--color-everkind-green) underline decoration-1 underline-offset-4 hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">${text}</a>`;
+    }
+    return text;
+  }).join('');
+};
+
+const { type } = block;
+const value = block[type];
+const hasChildren = block.children && block.children.length > 0;
+const renderedText = type !== 'divider' ? renderRichText(value?.rich_text) : '';
+
+// Determine the list style based on depth (Notion Style: Disc -> Circle -> Square)
+const bulletStyles = ['list-disc', 'list-[circle]', 'list-[square]'];
+const currentBulletStyle = bulletStyles[depth % 3];
+---
+
+{type === 'paragraph' && (
+  <div class="mb-4">
+    <p class="text-lg md:text-xl text-(--color-everkind-darkgrey) leading-relaxed tracking-normal" style="font-family: var(--font-sans);">
+      <Fragment set:html={renderedText} />
+    </p>
+    {hasChildren && (
+      <div class="pl-6 mt-4">
+        {block.children.map((child: any) => <Astro.self block={child} depth={depth + 1} />)}
+      </div>
+    )}
+  </div>
+)}
+
+{(type === 'bulleted_list_item' || type === 'numbered_list_item') && (
+  <div class="mb-2">
+    <ul class={`${type === 'bulleted_list_item' ? currentBulletStyle : 'list-decimal'} list-outside ml-6 space-y-2`}>
+      <li class="text-lg md:text-xl text-(--color-everkind-darkgrey) leading-relaxed pl-2 marker:text-(--color-everkind-green) marker:font-bold tracking-normal" style="font-family: var(--font-sans);">
+        <Fragment set:html={renderedText} />
+        
+        {/* Nested Children Rendering */}
+        {hasChildren && (
+          <div class="mt-4 -ml-4">
+            {block.children.map((child: any) => <Astro.self block={child} depth={depth + 1} />)}
+          </div>
+        )}
+      </li>
+    </ul>
+  </div>
+)}
+
+{type.startsWith('heading_') && (
+  <div class="mb-4 mt-8">
+    {type === 'heading_1' && <h2 class="text-4xl text-(--color-everkind-dark) font-normal border-l-4 border-(--color-everkind-green) pl-6 rounded-sm tracking-normal" style="font-family: var(--font-serif);"><Fragment set:html={renderedText} /></h2>}
+    {type === 'heading_2' && <h3 class="text-3xl text-(--color-everkind-dark) font-normal tracking-normal" style="font-family: var(--font-serif);"><Fragment set:html={renderedText} /></h3>}
+    {type === 'heading_3' && <h4 class="text-2xl text-(--color-everkind-dark) font-normal tracking-normal" style="font-family: var(--font-serif);"><Fragment set:html={renderedText} /></h4>}
+  </div>
+)}
+
+{type === 'image' && (
+  <figure class="my-10">
+    <img src={value.external?.url || value.file?.url} alt="JD Media" class="rounded-3xl w-full border border-(--color-everkind-green)/10 shadow-sm" style="max-height: 60vh; object-fit: cover;" />
+  </figure>
+)}
+
+{type === 'divider' && <div class="w-16 h-1 bg-(--color-everkind-green)/20 rounded-full my-10"></div>}
