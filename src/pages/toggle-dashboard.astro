@@ -1,0 +1,1315 @@
+---
+// Standalone Toggle Engine Analytics Dashboard Page (No Navbar / No Footer)
+export const prerender = false;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Toggle Engine Analytics Dashboard — Everkind AI</title>
+		
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=GFS+Didot&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+		<style is:inline>
+			/* ==========================================================================
+			   EVERKIND BRAND TOKENS & DASHBOARD BASE STYLES
+			   ========================================================================== */
+			:root {
+				--color-everkind-green: #0B3D25;
+				--color-everkind-dark: #000000;
+				--color-everkind-bg: #08160E;
+				--color-everkind-card: rgba(11, 61, 37, 0.35);
+				--color-everkind-lightgrey: #F3F3F3;
+				--color-everkind-midgrey: #292A32;
+				--color-everkind-lime: #C6F523;
+				--border-subtle: rgba(198, 245, 35, 0.18);
+
+				--font-serif: "GFS Didot", Georgia, serif;
+				--font-sans: "Inter", system-ui, -apple-system, sans-serif;
+				--font-mono: "JetBrains Mono", monospace;
+			}
+
+			* {
+				box-sizing: border-box;
+				margin: 0;
+				padding: 0;
+			}
+
+			html, body {
+				width: 100%;
+				min-height: 100vh;
+				background-color: var(--color-everkind-bg);
+				color: #F3F3F3;
+				font-family: var(--font-sans);
+				overflow-x: hidden;
+				-webkit-font-smoothing: antialiased;
+			}
+
+			/* Hide scrollbars */
+			body::-webkit-scrollbar {
+				display: none;
+			}
+			body {
+				-ms-overflow-style: none;
+				scrollbar-width: none;
+			}
+
+			.mono-micro {
+				font-family: var(--font-mono);
+				font-size: 0.72rem;
+				font-weight: 500;
+				letter-spacing: 0.08em;
+				text-transform: uppercase;
+			}
+
+			.lime-dot {
+				color: var(--color-everkind-lime);
+				margin-right: 0.35rem;
+			}
+
+			/* ==========================================================================
+			   PASSCODE SECURITY GATE OVERLAY (ECPL237)
+			   ========================================================================== */
+			.gate-overlay {
+				position: fixed;
+				inset: 0;
+				z-index: 99999;
+				background: radial-gradient(circle at center, #0B291A 0%, #040F09 100%);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				padding: 1.5rem;
+				backdrop-filter: blur(24px);
+				transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s ease, visibility 0.5s ease;
+			}
+
+			.gate-overlay.unlocked {
+				opacity: 0;
+				visibility: hidden;
+				pointer-events: none;
+				transform: scale(1.04);
+			}
+
+			.gate-card {
+				width: 100%;
+				max-width: 440px;
+				background: rgba(11, 61, 37, 0.45);
+				border: 1px solid rgba(198, 245, 35, 0.3);
+				box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+				backdrop-filter: blur(30px);
+				border-radius: 24px;
+				padding: 2.5rem 2rem;
+				color: #FFFFFF;
+				text-align: center;
+			}
+
+			.gate-badge {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.4rem;
+				font-family: var(--font-mono);
+				font-size: 0.68rem;
+				letter-spacing: 0.12em;
+				color: var(--color-everkind-lime);
+				background: rgba(198, 245, 35, 0.1);
+				border: 1px solid rgba(198, 245, 35, 0.25);
+				padding: 0.35rem 0.9rem;
+				border-radius: 9999px;
+				margin-bottom: 1.25rem;
+			}
+
+			.gate-title {
+				font-family: var(--font-serif);
+				font-size: 2.1rem;
+				font-weight: 400;
+				margin: 0 0 0.5rem;
+				color: #FFFFFF;
+			}
+
+			.gate-subtitle {
+				font-family: var(--font-sans);
+				font-size: 0.88rem;
+				color: rgba(255, 255, 255, 0.7);
+				margin: 0 0 1.75rem;
+				line-height: 1.45;
+			}
+
+			.gate-form {
+				display: flex;
+				flex-direction: column;
+				gap: 1.25rem;
+			}
+
+			.input-wrapper {
+				text-align: left;
+			}
+
+			.input-label {
+				display: block;
+				font-family: var(--font-mono);
+				font-size: 0.65rem;
+				letter-spacing: 0.1em;
+				color: rgba(255, 255, 255, 0.8);
+				margin-bottom: 0.4rem;
+			}
+
+			.input-group {
+				position: relative;
+				width: 100%;
+			}
+
+			.passcode-input {
+				width: 100%;
+				background: rgba(0, 0, 0, 0.4);
+				border: 1px solid rgba(198, 245, 35, 0.3);
+				border-radius: 14px;
+				padding: 0.85rem 3rem 0.85rem 1.1rem;
+				color: #FFFFFF;
+				font-family: var(--font-mono);
+				font-size: 1.1rem;
+				letter-spacing: 0.15em;
+				outline: none;
+				transition: border-color 0.3s ease, box-shadow 0.3s ease;
+			}
+
+			.passcode-input:focus {
+				border-color: var(--color-everkind-lime);
+				box-shadow: 0 0 0 3px rgba(198, 245, 35, 0.25);
+			}
+
+			.passcode-input.shake {
+				animation: inputShake 0.4s ease-in-out;
+				border-color: #FF4D4D !important;
+			}
+
+			@keyframes inputShake {
+				0%, 100% { transform: translateX(0); }
+				20%, 60% { transform: translateX(-8px); }
+				40%, 80% { transform: translateX(8px); }
+			}
+
+			.mask-toggle-btn {
+				position: absolute;
+				right: 0.75rem;
+				top: 50%;
+				transform: translateY(-50%);
+				background: transparent;
+				border: none;
+				color: rgba(255, 255, 255, 0.6);
+				cursor: pointer;
+				padding: 0.35rem;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				transition: color 0.2s ease;
+			}
+
+			.mask-toggle-btn:hover {
+				color: var(--color-everkind-lime);
+			}
+
+			.eye-icon {
+				width: 18px;
+				height: 18px;
+			}
+
+			.gate-error-msg {
+				font-family: var(--font-sans);
+				font-size: 0.78rem;
+				color: #FF6B6B;
+				min-height: 1.2rem;
+				display: none;
+			}
+
+			.gate-error-msg.show {
+				display: block;
+			}
+
+			.gate-submit-btn {
+				width: 100%;
+				background: var(--color-everkind-lime);
+				color: var(--color-everkind-green);
+				font-family: var(--font-sans);
+				font-size: 0.95rem;
+				font-weight: 700;
+				padding: 0.9rem 1.25rem;
+				border-radius: 14px;
+				border: none;
+				cursor: pointer;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				gap: 0.5rem;
+				transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+			}
+
+			.gate-submit-btn:hover {
+				transform: translateY(-2px);
+				background-color: #D4FF38;
+				box-shadow: 0 8px 20px rgba(198, 245, 35, 0.3);
+			}
+
+			.btn-arrow {
+				width: 18px;
+				height: 18px;
+			}
+
+			.gate-footer {
+				margin-top: 1.25rem;
+			}
+
+			/* ==========================================================================
+			   MAIN DASHBOARD WRAPPER & CONTAINER
+			   ========================================================================== */
+			.dash-wrapper {
+				width: 100%;
+				max-width: 1350px;
+				margin: 0 auto;
+				padding: 2.5rem 2rem 5rem;
+			}
+
+			.dash-header {
+				display: flex;
+				flex-wrap: wrap;
+				align-items: center;
+				justify-content: space-between;
+				gap: 1.5rem;
+				padding-bottom: 1.75rem;
+				margin-bottom: 2rem;
+				border-bottom: 1px solid rgba(198, 245, 35, 0.18);
+			}
+
+			.dash-brand-title {
+				font-family: var(--font-serif);
+				font-size: clamp(1.75rem, 3.2vw, 2.5rem);
+				font-weight: 400;
+				color: #FFFFFF;
+				margin: 0;
+				display: flex;
+				align-items: center;
+				gap: 0.75rem;
+			}
+
+			.live-pulse {
+				width: 10px;
+				height: 10px;
+				background-color: var(--color-everkind-lime);
+				border-radius: 50%;
+				display: inline-block;
+				box-shadow: 0 0 12px var(--color-everkind-lime);
+				animation: liveGlow 1.5s infinite ease-in-out;
+			}
+
+			@keyframes liveGlow {
+				0%, 100% { opacity: 1; transform: scale(1); }
+				50% { opacity: 0.35; transform: scale(0.85); }
+			}
+
+			.dash-subtext {
+				font-family: var(--font-mono);
+				font-size: 0.75rem;
+				color: rgba(255, 255, 255, 0.6);
+				margin-top: 0.35rem;
+				text-transform: uppercase;
+				letter-spacing: 0.08em;
+			}
+
+			.dash-controls {
+				display: flex;
+				align-items: center;
+				gap: 0.85rem;
+				flex-wrap: wrap;
+			}
+
+			.dash-action-btn {
+				background: rgba(198, 245, 35, 0.12);
+				border: 1px solid rgba(198, 245, 35, 0.3);
+				color: var(--color-everkind-lime);
+				font-family: var(--font-mono);
+				font-size: 0.74rem;
+				padding: 0.55rem 1.1rem;
+				border-radius: 12px;
+				cursor: pointer;
+				display: inline-flex;
+				align-items: center;
+				gap: 0.4rem;
+				transition: all 0.25s ease;
+			}
+
+			.dash-action-btn:hover {
+				background: rgba(198, 245, 35, 0.25);
+				transform: translateY(-1px);
+			}
+
+			/* ==========================================================================
+			   SECTION 1: TOP 4 REAL STAT KPI CARDS
+			   ========================================================================== */
+			.kpi-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+				gap: 1.25rem;
+				margin-bottom: 2rem;
+			}
+
+			.kpi-card {
+				background: rgba(11, 61, 37, 0.3);
+				border: 1px solid rgba(198, 245, 35, 0.18);
+				border-radius: 20px;
+				padding: 1.6rem 1.5rem;
+				position: relative;
+				overflow: hidden;
+				transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+			}
+
+			.kpi-card:hover {
+				transform: translateY(-4px);
+				border-color: rgba(198, 245, 35, 0.45);
+				box-shadow: 0 14px 35px rgba(0, 0, 0, 0.4);
+			}
+
+			.kpi-top {
+				display: flex;
+				justify-content: space-between;
+				align-items: flex-start;
+				margin-bottom: 0.85rem;
+			}
+
+			.kpi-label {
+				font-family: var(--font-mono);
+				font-size: 0.68rem;
+				letter-spacing: 0.1em;
+				color: rgba(255, 255, 255, 0.7);
+				text-transform: uppercase;
+			}
+
+			.kpi-icon-wrap {
+				width: 36px;
+				height: 36px;
+				border-radius: 10px;
+				background: rgba(198, 245, 35, 0.12);
+				color: var(--color-everkind-lime);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+
+			.kpi-value {
+				font-family: var(--font-serif);
+				font-size: clamp(2.1rem, 3.8vw, 2.75rem);
+				font-weight: 400;
+				color: #FFFFFF;
+				line-height: 1;
+				margin-bottom: 0.6rem;
+			}
+
+			.kpi-meta {
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+				font-size: 0.75rem;
+			}
+
+			.trend-badge {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.2rem;
+				font-family: var(--font-mono);
+				font-size: 0.68rem;
+				font-weight: 700;
+				padding: 0.15rem 0.5rem;
+				border-radius: 9999px;
+			}
+
+			.trend-badge.positive {
+				background: rgba(198, 245, 35, 0.2);
+				color: var(--color-everkind-lime);
+			}
+
+			.kpi-subtext {
+				color: rgba(255, 255, 255, 0.55);
+				font-size: 0.72rem;
+			}
+
+			/* ==========================================================================
+			   SECTION 2: MAIN CHARTS & FUNNEL LAYOUT
+			   ========================================================================== */
+			.analytics-row {
+				display: grid;
+				grid-template-columns: 1.6fr 1fr;
+				gap: 1.5rem;
+				margin-bottom: 2rem;
+			}
+
+			@media (max-width: 1024px) {
+				.analytics-row {
+					grid-template-columns: 1fr;
+				}
+			}
+
+			.chart-panel {
+				background: rgba(11, 61, 37, 0.25);
+				border: 1px solid rgba(198, 245, 35, 0.18);
+				border-radius: 20px;
+				padding: 1.75rem;
+				display: flex;
+				flex-direction: column;
+			}
+
+			.panel-header {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				margin-bottom: 1.5rem;
+			}
+
+			.panel-title {
+				font-family: var(--font-serif);
+				font-size: 1.4rem;
+				font-weight: 400;
+				color: #FFFFFF;
+				margin: 0;
+			}
+
+			.canvas-container {
+				width: 100%;
+				height: 250px;
+				position: relative;
+			}
+
+			#timelineChartCanvas {
+				width: 100%;
+				height: 100%;
+				display: block;
+			}
+
+			.chart-legend {
+				display: flex;
+				gap: 1.5rem;
+				margin-top: 1rem;
+				font-family: var(--font-mono);
+				font-size: 0.7rem;
+				color: rgba(255, 255, 255, 0.7);
+			}
+
+			.legend-item {
+				display: flex;
+				align-items: center;
+				gap: 0.4rem;
+			}
+
+			.legend-color {
+				width: 10px;
+				height: 10px;
+				border-radius: 3px;
+			}
+
+			/* STAGE CONVERSION FUNNEL */
+			.funnel-panel {
+				background: rgba(11, 61, 37, 0.25);
+				border: 1px solid rgba(198, 245, 35, 0.18);
+				border-radius: 20px;
+				padding: 1.75rem;
+			}
+
+			.funnel-list {
+				display: flex;
+				flex-direction: column;
+				gap: 1rem;
+				margin-top: 1rem;
+			}
+
+			.funnel-item {
+				display: flex;
+				flex-direction: column;
+				gap: 0.35rem;
+			}
+
+			.funnel-meta {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				font-size: 0.78rem;
+			}
+
+			.funnel-stage-name {
+				font-weight: 600;
+				color: #FFFFFF;
+			}
+
+			.funnel-count {
+				font-family: var(--font-mono);
+				font-size: 0.72rem;
+				color: var(--color-everkind-lime);
+			}
+
+			.funnel-bar-bg {
+				height: 8px;
+				width: 100%;
+				background: rgba(255, 255, 255, 0.08);
+				border-radius: 9999px;
+				overflow: hidden;
+			}
+
+			.funnel-bar-fill {
+				height: 100%;
+				background: linear-gradient(90deg, var(--color-everkind-green) 0%, var(--color-everkind-lime) 100%);
+				border-radius: 9999px;
+				transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+			}
+
+			/* ==========================================================================
+			   SECTION 3: TEST BENCH & LIVE EVENT LOG
+			   ========================================================================== */
+			.bottom-row {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 1.5rem;
+			}
+
+			@media (max-width: 900px) {
+				.bottom-row {
+					grid-template-columns: 1fr;
+				}
+			}
+
+			.simulator-panel {
+				background: rgba(11, 61, 37, 0.3);
+				border: 1px solid rgba(198, 245, 35, 0.22);
+				border-radius: 20px;
+				padding: 1.75rem;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				text-align: center;
+			}
+
+			.sim-toggle-wrap {
+				margin: 1.5rem 0;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				gap: 0.75rem;
+			}
+
+			.sim-toggle-btn {
+				display: inline-flex;
+				align-items: center;
+				position: relative;
+				width: 2.4em;
+				height: 1.15em;
+				border-radius: 9999px;
+				background-color: #E2E4E8;
+				border: 2px solid rgba(11, 61, 37, 0.3);
+				cursor: pointer;
+				outline: none;
+				padding: 0;
+				box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.25);
+				transition: transform 0.25s ease, background-color 0.3s ease;
+			}
+
+			.sim-toggle-btn:hover {
+				transform: scale(1.06);
+			}
+
+			.sim-toggle-knob {
+				position: absolute;
+				top: 50%;
+				left: 0.08em;
+				transform: translateY(-50%);
+				width: 0.95em;
+				height: 0.95em;
+				border-radius: 50%;
+				background-color: var(--color-everkind-lime);
+				box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+				transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+			}
+
+			.sim-toggle-btn.is-active .sim-toggle-knob {
+				transform: translate(1.25em, -50%);
+			}
+
+			.log-panel {
+				background: rgba(11, 61, 37, 0.25);
+				border: 1px solid rgba(198, 245, 35, 0.18);
+				border-radius: 20px;
+				padding: 1.75rem;
+				display: flex;
+				flex-direction: column;
+			}
+
+			.log-feed {
+				font-family: var(--font-mono);
+				font-size: 0.72rem;
+				background: rgba(0, 0, 0, 0.45);
+				border: 1px solid rgba(255, 255, 255, 0.08);
+				border-radius: 12px;
+				padding: 1rem;
+				height: 200px;
+				overflow-y: auto;
+				display: flex;
+				flex-direction: column;
+				gap: 0.5rem;
+			}
+
+			.log-entry {
+				line-height: 1.4;
+				color: rgba(255, 255, 255, 0.78);
+				border-bottom: 1px dashed rgba(255, 255, 255, 0.06);
+				padding-bottom: 0.35rem;
+			}
+
+			.log-entry .timestamp {
+				color: var(--color-everkind-lime);
+				margin-right: 0.5rem;
+			}
+
+			.empty-notice {
+				color: rgba(255, 255, 255, 0.4);
+				font-style: italic;
+				text-align: center;
+				padding: 1.5rem 0;
+			}
+		</style>
+	</head>
+	<body>
+
+		<!-- PASSCODE SECURITY GATE OVERLAY -->
+		<div id="passwordGateOverlay" class="gate-overlay">
+			<div class="gate-card">
+				<div class="gate-header">
+					<div class="gate-badge">
+						<span class="lime-dot">•</span> RESTRICTED ENGINE ANALYTICS
+					</div>
+					<h1 class="gate-title">Everkind Analytics Gate</h1>
+					<p class="gate-subtitle">Enter security passcode to unlock the Toggle Button KPI Dashboard.</p>
+				</div>
+
+				<form id="gateForm" class="gate-form" autocomplete="off">
+					<div class="input-wrapper">
+						<label for="passcodeInput" class="input-label">SECURITY PASSCODE</label>
+						<div class="input-group">
+							<input
+								type="password"
+								id="passcodeInput"
+								class="passcode-input"
+								placeholder="Enter passcode..."
+								required
+								autofocus
+							/>
+							<button type="button" id="toggleMaskBtn" class="mask-toggle-btn" aria-label="Toggle password visibility">
+								<svg id="eyeIcon" class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+									<circle cx="12" cy="12" r="3"></circle>
+								</svg>
+							</button>
+						</div>
+					</div>
+
+					<div id="gateErrorMessage" class="gate-error-msg" role="alert"></div>
+
+					<button type="submit" class="gate-submit-btn">
+						Unlock Analytics Dashboard
+						<svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<path d="M5 12h14m-7-7l7 7-7 7"/>
+						</svg>
+					</button>
+
+					<div class="gate-footer">
+						<span class="mono-micro opacity-60">ENCRYPTED SESSION • PASSCODE REQ: ECPL237</span>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<!-- STANDALONE ANALYTICS DASHBOARD CONTENT -->
+		<div id="dashboardContent" class="dash-wrapper">
+
+			<!-- HEADER & TOP ACTION BAR -->
+			<header class="dash-header">
+				<div>
+					<h1 class="dash-brand-title">
+						<span class="live-pulse"></span>
+						Toggle Engine KPI Dashboard
+					</h1>
+					<p class="dash-subtext">Everkind AI Consumers • Vercel Cloud Live Telemetry</p>
+				</div>
+
+				<div class="dash-controls">
+					<button type="button" id="clearDataBtn" class="dash-action-btn" title="Reset Telemetry Session">
+						<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path>
+						</svg>
+						Reset Telemetry
+					</button>
+
+					<button type="button" id="lockGateBtn" class="dash-action-btn">
+						<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+							<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+						</svg>
+						Lock Gate
+					</button>
+				</div>
+			</header>
+
+			<!-- SECTION 1: TOP 4 STAT KPI CARDS -->
+			<section class="kpi-grid">
+				<!-- CARD 1 -->
+				<div class="kpi-card">
+					<div class="kpi-top">
+						<span class="kpi-label">TOTAL TOGGLE ENGAGEMENTS</span>
+						<div class="kpi-icon-wrap">
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+								<rect x="2" y="6" width="20" height="12" rx="6"></rect>
+								<circle cx="8" cy="12" r="3"></circle>
+							</svg>
+						</div>
+					</div>
+					<div class="kpi-value" id="kpiEngagements">0</div>
+					<div class="kpi-meta">
+						<span class="trend-badge positive">LIVE READOUT</span>
+						<span class="kpi-subtext">Real user clicks</span>
+					</div>
+				</div>
+
+				<!-- CARD 2 -->
+				<div class="kpi-card">
+					<div class="kpi-top">
+						<span class="kpi-label">TOGGLE CONVERSION RATE</span>
+						<div class="kpi-icon-wrap">
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+								<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+							</svg>
+						</div>
+					</div>
+					<div class="kpi-value" id="kpiConversion">0.0%</div>
+					<div class="kpi-meta">
+						<span class="trend-badge positive">CALCULATED</span>
+						<span class="kpi-subtext" id="kpiConversionSub">Tapped / Total Visits</span>
+					</div>
+				</div>
+
+				<!-- CARD 3 -->
+				<div class="kpi-card">
+					<div class="kpi-top">
+						<span class="kpi-label">LOOP EXPLORATION RATE</span>
+						<div class="kpi-icon-wrap">
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2">
+								<path d="M21.5 2v6h-6"></path>
+								<path d="M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+							</svg>
+						</div>
+					</div>
+					<div class="kpi-value" id="kpiExploration">0.0%</div>
+					<div class="kpi-meta">
+						<span class="trend-badge positive">TELEMETRY</span>
+						<span class="kpi-subtext" id="kpiExplorationSub">Stage node interactions</span>
+					</div>
+				</div>
+
+				<!-- CARD 4 -->
+				<div class="kpi-card">
+					<div class="kpi-top">
+						<span class="kpi-label">AVG TIME TO FIRST TOGGLE</span>
+						<div class="kpi-icon-wrap">
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+								<circle cx="12" cy="12" r="10"></circle>
+								<polyline points="12 6 12 12 16 14"></polyline>
+							</svg>
+						</div>
+					</div>
+					<div class="kpi-value" id="kpiLatency">0.0s</div>
+					<div class="kpi-meta">
+						<span class="trend-badge positive">REAL TIMING</span>
+						<span class="kpi-subtext" id="kpiLatencySub">Page load to toggle tap</span>
+					</div>
+				</div>
+			</section>
+
+			<!-- SECTION 2: CHARTS & FUNNEL -->
+			<section class="analytics-row">
+				<!-- TIMELINE CHART PANEL -->
+				<div class="chart-panel">
+					<div class="panel-header">
+						<h2 class="panel-title">Toggle Activation Activity Timeline</h2>
+						<span class="mono-micro color-lime" style="color: var(--color-everkind-lime);">LIVE CLOUD PULSE</span>
+					</div>
+
+					<div class="canvas-container">
+						<canvas id="timelineChartCanvas"></canvas>
+					</div>
+
+					<div class="chart-legend">
+						<div class="legend-item">
+							<span class="legend-color" style="background: #C6F523;"></span>
+							<span>Mode ON Activations</span>
+						</div>
+						<div class="legend-item">
+							<span class="legend-color" style="background: rgba(11, 61, 37, 0.8);"></span>
+							<span>Mode OFF Reset</span>
+						</div>
+					</div>
+				</div>
+
+				<!-- STAGE CONVERSION FUNNEL PANEL -->
+				<div class="funnel-panel">
+					<div class="panel-header">
+						<h2 class="panel-title">Lifecycle Stage Funnel</h2>
+						<span class="mono-micro opacity-60">JUMP DISTRIBUTION</span>
+					</div>
+
+					<div class="funnel-list">
+						<div class="funnel-item">
+							<div class="funnel-meta">
+								<span class="funnel-stage-name">01 Consumer Insight</span>
+								<span class="funnel-count" id="funnelCount0">0 (0%)</span>
+							</div>
+							<div class="funnel-bar-bg">
+								<div class="funnel-bar-fill" id="funnelBar0" style="width: 0%;"></div>
+							</div>
+						</div>
+
+						<div class="funnel-item">
+							<div class="funnel-meta">
+								<span class="funnel-stage-name">02 Product Innovation</span>
+								<span class="funnel-count" id="funnelCount1">0 (0%)</span>
+							</div>
+							<div class="funnel-bar-bg">
+								<div class="funnel-bar-fill" id="funnelBar1" style="width: 0%;"></div>
+							</div>
+						</div>
+
+						<div class="funnel-item">
+							<div class="funnel-meta">
+								<span class="funnel-stage-name">03 Launch</span>
+								<span class="funnel-count" id="funnelCount2">0 (0%)</span>
+							</div>
+							<div class="funnel-bar-bg">
+								<div class="funnel-bar-fill" id="funnelBar2" style="width: 0%;"></div>
+							</div>
+						</div>
+
+						<div class="funnel-item">
+							<div class="funnel-meta">
+								<span class="funnel-stage-name">04 Consumer Feedback</span>
+								<span class="funnel-count" id="funnelCount3">0 (0%)</span>
+							</div>
+							<div class="funnel-bar-bg">
+								<div class="funnel-bar-fill" id="funnelBar3" style="width: 0%;"></div>
+							</div>
+						</div>
+
+						<div class="funnel-item">
+							<div class="funnel-meta">
+								<span class="funnel-stage-name">05 Continuous Learning</span>
+								<span class="funnel-count" id="funnelCount4">0 (0%)</span>
+							</div>
+							<div class="funnel-bar-bg">
+								<div class="funnel-bar-fill" id="funnelBar4" style="width: 0%;"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- SECTION 3: TEST BENCH SIMULATOR & LIVE FEED -->
+			<section class="bottom-row">
+				<!-- TEST BENCH SIMULATOR -->
+				<div class="simulator-panel">
+					<h2 class="panel-title">Interactive Toggle Test-Bench</h2>
+					<p class="dash-subtext">Click the simulator button to test tactile feedback &amp; log live KPI events.</p>
+
+					<div class="sim-toggle-wrap">
+						<button type="button" id="simToggleBtn" class="sim-toggle-btn" aria-label="Simulate Toggle Click">
+							<span class="sim-toggle-knob"></span>
+						</button>
+						<span class="mono-micro" id="simStateLabel">STATUS: MODE OFF</span>
+					</div>
+
+					<div class="kpi-subtext">
+						Audio Context pitch: <strong id="simPitchLabel">500Hz → 320Hz</strong>
+					</div>
+				</div>
+
+				<!-- LIVE LOG FEED -->
+				<div class="log-panel">
+					<div class="panel-header">
+						<h2 class="panel-title">Real-Time Event Stream</h2>
+						<span class="mono-micro color-lime" style="color: var(--color-everkind-lime);">LIVE CLOUD LOGS</span>
+					</div>
+
+					<div class="log-feed" id="logFeed">
+						<div class="empty-notice">Fetching live server logs...</div>
+					</div>
+				</div>
+			</section>
+		</div>
+
+		<script is:inline>
+			document.addEventListener('DOMContentLoaded', () => {
+				const PASSCODE = 'ECPL237';
+				const AUTH_KEY = 'everkind_toggle_analytics_auth';
+
+				// DOM Elements
+				const passwordGateOverlay = document.getElementById('passwordGateOverlay');
+				const gateForm = document.getElementById('gateForm');
+				const passcodeInput = document.getElementById('passcodeInput');
+				const toggleMaskBtn = document.getElementById('toggleMaskBtn');
+				const gateErrorMessage = document.getElementById('gateErrorMessage');
+				const lockGateBtn = document.getElementById('lockGateBtn');
+				const clearDataBtn = document.getElementById('clearDataBtn');
+
+				const simToggleBtn = document.getElementById('simToggleBtn');
+				const simStateLabel = document.getElementById('simStateLabel');
+				const simPitchLabel = document.getElementById('simPitchLabel');
+				const logFeed = document.getElementById('logFeed');
+
+				const kpiEngagements = document.getElementById('kpiEngagements');
+				const kpiConversion = document.getElementById('kpiConversion');
+				const kpiExploration = document.getElementById('kpiExploration');
+				const kpiLatency = document.getElementById('kpiLatency');
+
+				let audioCtx = null;
+				let isSimActive = false;
+
+				/* ==========================================================================
+				   1. PASSCODE SECURITY GATE HANDLER
+				   ========================================================================== */
+				function checkAuth() {
+					const savedAuth = sessionStorage.getItem(AUTH_KEY);
+					if (savedAuth === PASSCODE) {
+						unlockDashboard();
+					}
+				}
+
+				function unlockDashboard() {
+					if (passwordGateOverlay) {
+						passwordGateOverlay.classList.add('unlocked');
+					}
+					sessionStorage.setItem(AUTH_KEY, PASSCODE);
+					renderRealDashboardData();
+				}
+
+				function lockDashboard() {
+					sessionStorage.removeItem(AUTH_KEY);
+					if (passwordGateOverlay) {
+						passwordGateOverlay.classList.remove('unlocked');
+					}
+					if (passcodeInput) {
+						passcodeInput.value = '';
+						passcodeInput.focus();
+					}
+				}
+
+				if (gateForm) {
+					gateForm.addEventListener('submit', (e) => {
+						e.preventDefault();
+						const entered = passcodeInput.value.trim();
+
+						if (entered === PASSCODE) {
+							if (gateErrorMessage) gateErrorMessage.classList.remove('show');
+							unlockDashboard();
+						} else {
+							if (gateErrorMessage) {
+								gateErrorMessage.textContent = 'Access Denied: Invalid Security Passcode';
+								gateErrorMessage.classList.add('show');
+							}
+							passcodeInput.classList.add('shake');
+							setTimeout(() => passcodeInput.classList.remove('shake'), 450);
+						}
+					});
+				}
+
+				if (toggleMaskBtn && passcodeInput) {
+					toggleMaskBtn.addEventListener('click', () => {
+						const isPassword = passcodeInput.type === 'password';
+						passcodeInput.type = isPassword ? 'text' : 'password';
+					});
+				}
+
+				if (lockGateBtn) {
+					lockGateBtn.addEventListener('click', lockDashboard);
+				}
+
+				if (clearDataBtn) {
+					clearDataBtn.addEventListener('click', async () => {
+						if (confirm('Reset Vercel cloud telemetry metrics?')) {
+							await fetch('/api/telemetry', {
+								method: 'POST',
+								headers: { 'Content-Type': 'application/json' },
+								body: JSON.stringify({ type: 'reset' })
+							}).catch(() => {});
+							renderRealDashboardData();
+						}
+					});
+				}
+
+				checkAuth();
+
+				/* ==========================================================================
+				   2. VERCEL CLOUD TELEMETRY ENGINE & REAL-TIME POLLING
+				   ========================================================================== */
+				async function renderRealDashboardData() {
+					try {
+						let totalClicks = 0;
+						let totalPageViews = 1;
+						let stageTaps = {};
+						let latencies = [];
+						let logs = [];
+
+						// 1. Fetch live serverless cloud data
+						try {
+							const res = await fetch('/api/telemetry');
+							if (res.ok) {
+								const data = await res.json();
+								totalClicks = data.totalClicks || 0;
+								totalPageViews = data.totalPageViews || 1;
+								stageTaps = data.stageTaps || {};
+								latencies = data.latencies || [];
+								logs = data.eventLogs || [];
+							}
+						} catch (e) {}
+
+						// 2. Read local client cache to protect against serverless lambda resets
+						try {
+							const localClicks = parseInt(localStorage.getItem('everkind_toggle_click_count') || '0', 10);
+							const localViews = parseInt(localStorage.getItem('everkind_total_page_views') || '1', 10);
+							const localTaps = JSON.parse(localStorage.getItem('everkind_stage_taps') || '{}');
+							const localLatencies = JSON.parse(localStorage.getItem('everkind_toggle_latencies') || '[]');
+							const localLogs = JSON.parse(localStorage.getItem('everkind_live_events_log') || '[]');
+
+							totalClicks = Math.max(totalClicks, localClicks);
+							totalPageViews = Math.max(totalPageViews, localViews);
+							for (let i = 0; i < 5; i++) {
+								stageTaps[i] = Math.max(stageTaps[i] || 0, localTaps[i] || 0);
+							}
+							if (latencies.length === 0) latencies = localLatencies;
+							if (logs.length === 0) logs = localLogs;
+						} catch (e) {}
+
+						// 1. Total Clicks
+						if (kpiEngagements) {
+							kpiEngagements.textContent = totalClicks.toLocaleString();
+						}
+
+						// 2. Conversion Rate
+						const totalVisits = Math.max(1, totalPageViews);
+						const conversionRate = Math.min(100, (totalClicks / totalVisits * 100)).toFixed(1);
+						if (kpiConversion) {
+							kpiConversion.textContent = `${conversionRate}%`;
+						}
+
+						// 3. Stage Exploration Rate
+						let totalStageTaps = 0;
+						for (const key in stageTaps) {
+							totalStageTaps += (stageTaps[key] || 0);
+						}
+						const explorationRate = totalClicks > 0 
+							? Math.min(100, (totalStageTaps / totalClicks * 100)).toFixed(1)
+							: '0.0';
+						if (kpiExploration) {
+							kpiExploration.textContent = `${explorationRate}%`;
+						}
+
+						// 4. Latency
+						let avgLatency = '0.0s';
+						if (latencies.length > 0) {
+							const sum = latencies.reduce((acc, val) => acc + val, 0);
+							avgLatency = (sum / latencies.length).toFixed(1) + 's';
+						}
+						if (kpiLatency) {
+							kpiLatency.textContent = `${avgLatency}`;
+						}
+
+						// 5. Stage Funnel Bars
+						const stagesCount = [
+							stageTaps[0] || 0,
+							stageTaps[1] || 0,
+							stageTaps[2] || 0,
+							stageTaps[3] || 0,
+							stageTaps[4] || 0
+						];
+						const maxCount = Math.max(1, totalClicks, ...stagesCount);
+
+						for (let i = 0; i < 5; i++) {
+							const countEl = document.getElementById(`funnelCount${i}`);
+							const barEl = document.getElementById(`funnelBar${i}`);
+							const countVal = stagesCount[i];
+							const pct = totalClicks > 0 ? ((countVal / maxCount) * 100).toFixed(1) : '0.0';
+
+							if (countEl) countEl.textContent = `${countVal.toLocaleString()} (${pct}%)`;
+							if (barEl) barEl.style.width = `${pct}%`;
+						}
+
+						// 6. Live Logs Feed
+						if (logFeed) {
+							logFeed.innerHTML = '';
+							if (logs.length === 0) {
+								logFeed.innerHTML = '<div class="empty-notice">No live server logs captured yet. Click the toggle in i3/index or test-bench!</div>';
+							} else {
+								logs.forEach(log => {
+									const entry = document.createElement('div');
+									entry.className = 'log-entry';
+									entry.innerHTML = `<span class="timestamp">[${log.time}]</span> ${log.text}`;
+									logFeed.appendChild(entry);
+								});
+							}
+						}
+
+						drawTimelineChart(totalClicks);
+					} catch (err) {}
+				}
+
+				// Initial immediate fetch & auto-poll Vercel Cloud API every 2 seconds
+				renderRealDashboardData();
+				setInterval(renderRealDashboardData, 2000);
+
+				/* ==========================================================================
+				   3. CANVAS TIMELINE CHART RENDERER
+				   ========================================================================== */
+				function drawTimelineChart(clicksCount = 0) {
+					const canvas = document.getElementById('timelineChartCanvas');
+					if (!canvas) return;
+
+					const ctx = canvas.getContext('2d');
+					const dpr = window.devicePixelRatio || 1;
+
+					const rect = canvas.getBoundingClientRect();
+					canvas.width = rect.width * dpr;
+					canvas.height = rect.height * dpr;
+					ctx.scale(dpr, dpr);
+
+					const W = rect.width;
+					const H = rect.height;
+
+					ctx.clearRect(0, 0, W, H);
+
+					// Draw Grid Lines
+					ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
+					ctx.lineWidth = 1;
+
+					for (let y = 30; y < H - 20; y += 40) {
+						ctx.beginPath();
+						ctx.moveTo(0, y);
+						ctx.lineTo(W, y);
+						ctx.stroke();
+					}
+
+					// Dynamic Points based on real server clicks
+					const factor = Math.min(1, clicksCount / 10);
+					const points = [
+						{ x: 0, y: H * (0.85 - 0.1 * factor) },
+						{ x: W * 0.2, y: H * (0.75 - 0.3 * factor) },
+						{ x: W * 0.4, y: H * (0.65 - 0.4 * factor) },
+						{ x: W * 0.6, y: H * (0.55 - 0.3 * factor) },
+						{ x: W * 0.8, y: H * (0.45 - 0.35 * factor) },
+						{ x: W, y: H * (0.35 - 0.25 * factor) }
+					];
+
+					// Fill Gradient Curve
+					const grad = ctx.createLinearGradient(0, 0, 0, H);
+					grad.addColorStop(0, 'rgba(198, 245, 35, 0.35)');
+					grad.addColorStop(1, 'rgba(198, 245, 35, 0.0)');
+
+					ctx.beginPath();
+					ctx.moveTo(points[0].x, points[0].y);
+
+					for (let i = 1; i < points.length; i++) {
+						const xc = (points[i].x + points[i - 1].x) / 2;
+						const yc = (points[i].y + points[i - 1].y) / 2;
+						ctx.quadraticCurveTo(points[i - 1].x, points[i - 1].y, xc, yc);
+					}
+
+					ctx.lineTo(W, H);
+					ctx.lineTo(0, H);
+					ctx.closePath();
+					ctx.fillStyle = grad;
+					ctx.fill();
+
+					// Line Stroke
+					ctx.beginPath();
+					ctx.moveTo(points[0].x, points[0].y);
+					for (let i = 1; i < points.length; i++) {
+						const xc = (points[i].x + points[i - 1].x) / 2;
+						const yc = (points[i].y + points[i - 1].y) / 2;
+						ctx.quadraticCurveTo(points[i - 1].x, points[i - 1].y, xc, yc);
+					}
+					ctx.strokeStyle = '#C6F523';
+					ctx.lineWidth = 3;
+					ctx.stroke();
+
+					// Draw Data Nodes
+					points.forEach(pt => {
+						ctx.beginPath();
+						ctx.arc(pt.x, pt.y, 4, 0, Math.PI * 2);
+						ctx.fillStyle = '#0B3D25';
+						ctx.fill();
+						ctx.strokeStyle = '#C6F523';
+						ctx.lineWidth = 2;
+						ctx.stroke();
+					});
+				}
+
+				window.addEventListener('resize', () => renderRealDashboardData());
+
+				/* ==========================================================================
+				   4. SIMULATOR TEST-BENCH HANDLER
+				   ========================================================================== */
+				if (simToggleBtn) {
+					simToggleBtn.addEventListener('click', () => {
+						isSimActive = !isSimActive;
+						simToggleBtn.classList.toggle('is-active', isSimActive);
+
+						if (simStateLabel) {
+							simStateLabel.textContent = isSimActive ? 'STATUS: MODE ON (ACTIVE)' : 'STATUS: MODE OFF';
+							simStateLabel.style.color = isSimActive ? '#C6F523' : '#FFFFFF';
+						}
+
+						if (simPitchLabel) {
+							simPitchLabel.textContent = isSimActive ? '820Hz → 1150Hz' : '500Hz → 320Hz';
+						}
+
+						playSimSound(isSimActive);
+
+						fetch('/api/telemetry', {
+							method: 'POST',
+							headers: { 'Content-Type': 'application/json' },
+							body: JSON.stringify({
+								type: 'toggle_click',
+								active: isSimActive,
+								page: 'test-bench'
+							})
+						}).then(() => renderRealDashboardData()).catch(() => {});
+					});
+				}
+
+				function playSimSound(active) {
+					try {
+						if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+						if (audioCtx.state === 'suspended') audioCtx.resume();
+
+						const osc = audioCtx.createOscillator();
+						const gain = audioCtx.createGain();
+
+						osc.type = 'sine';
+						osc.frequency.setValueAtTime(active ? 820 : 500, audioCtx.currentTime);
+						osc.frequency.exponentialRampToValueAtTime(active ? 1150 : 320, audioCtx.currentTime + 0.04);
+
+						gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+						gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.04);
+
+						osc.connect(gain);
+						gain.connect(audioCtx.destination);
+
+						osc.start();
+						osc.stop(audioCtx.currentTime + 0.045);
+					} catch (e) {}
+				}
+			});
+		</script>
+	</body>
+</html>

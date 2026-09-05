@@ -798,9 +798,8 @@ document.addEventListener('DOMContentLoaded', () => {
      2. AUTOMATED ANIMATED LOOP CANVAS (#autoLoopCanvas)
      ========================================================================== */
 
-  function updateStageText(index) {
-    if (currentStageIndex === index) return;
-    currentStageIndex = index;
+  function setStage(index) {
+    currentStageIndex = index % loopStageNames.length;
     const stageName = loopStageNames[currentStageIndex];
     const thinkingMsg = thinkingMessages[currentStageIndex];
 
@@ -811,7 +810,7 @@ document.addEventListener('DOMContentLoaded', () => {
         activeStageName.textContent = stageName;
         activeStageName.style.opacity = '1';
         activeStageName.style.transform = 'translateY(0)';
-      }, 120);
+      }, 150);
     }
 
     if (agentThinkingText) {
@@ -819,9 +818,14 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         agentThinkingText.textContent = thinkingMsg;
         agentThinkingText.style.opacity = '1';
-      }, 120);
+      }, 150);
     }
   }
+
+  // Automated Step Switcher Timer
+  setInterval(() => {
+    setStage((currentStageIndex + 1) % loopStageNames.length);
+  }, 2600);
 
   function initAutomatedLoopCanvas() {
     const canvas = document.getElementById('autoLoopCanvas');
@@ -839,17 +843,6 @@ document.addEventListener('DOMContentLoaded', () => {
       particleAngle += 0.008;
       ctx.clearRect(0, 0, w, h);
 
-      // DYNAMIC NODE CROSSING SYNCHRONIZATION LOGIC:
-      // Calculate particle angle normalized relative to top (-PI/2)
-      let angleNormalized = (particleAngle + Math.PI / 2) % (2 * Math.PI);
-      if (angleNormalized < 0) angleNormalized += 2 * Math.PI;
-
-      // Each node sector spans 72 degrees (2*PI/5 rad)
-      const sector = (2 * Math.PI) / 5;
-      const detectedNode = Math.floor(((angleNormalized + (Math.PI / 5)) % (2 * Math.PI)) / sector);
-      
-      updateStageText(detectedNode);
-
       // Outer Soft Green Glow
       const bgGrad = ctx.createRadialGradient(cx, cy, 20, cx, cy, radius + 40);
       bgGrad.addColorStop(0, 'rgba(11, 61, 37, 0.08)');
@@ -860,7 +853,7 @@ document.addEventListener('DOMContentLoaded', () => {
       ctx.arc(cx, cy, radius + 40, 0, Math.PI * 2);
       ctx.fill();
 
-      // Main Planet Orbit Track Line (Everkind Green - CLEAN CIRCLE WITHOUT SPOKES)
+      // Main Loop Orbit Track Line (Everkind Green)
       ctx.save();
       ctx.beginPath();
       ctx.arc(cx, cy, radius, 0, Math.PI * 2);
@@ -900,13 +893,23 @@ document.addEventListener('DOMContentLoaded', () => {
       ctx.arc(cx, cy, 7, 0, Math.PI * 2);
       ctx.fill();
 
-      // Draw 5 Nodes around the circle (NO SPOKE LINES TO CENTER)
+      // Draw 5 Nodes around the circle (Everkind Green Theme)
       const totalNodes = 5;
       for (let i = 0; i < totalNodes; i++) {
         const nodeAngle = (i * (2 * Math.PI / totalNodes)) - (Math.PI / 2);
         const nx = cx + Math.cos(nodeAngle) * radius;
         const ny = cy + Math.sin(nodeAngle) * radius;
         const isActive = (i === currentStageIndex);
+
+        // Connection Line to Center
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(nx, ny);
+        ctx.strokeStyle = '#0B3D25';
+        ctx.globalAlpha = isActive ? 0.45 : 0.08;
+        ctx.lineWidth = isActive ? 2.5 : 1;
+        ctx.stroke();
+        ctx.globalAlpha = 1;
 
         // Node Active Glow Ring
         if (isActive) {

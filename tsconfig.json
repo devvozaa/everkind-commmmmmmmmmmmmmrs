@@ -1,5 +1,13 @@
 {
-  "extends": "astro/tsconfigs/strict",
-  "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist", "node_modules"]
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "jsx": "preserve",
+    "jsxImportSource": "astro",
+    "allowJs": true,
+    "noEmit": true
+  },
+  "include": ["src/**/*", ".astro/types.d.ts"]
 }

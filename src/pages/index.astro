@@ -9,19 +9,19 @@ import OperatingModel from '../components/OperatingModel.astro';
 import WhyChooseUs from '../components/WhyChooseUs.astro';
 ---
 
-<Layout title="Everkind Consumers">
+<Layout title="Everkind Consumers — AI Native Consumer Wellness Platform">
 	<main>
 			<Hero />
 			<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 			<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 			<script is:inline src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
 			
-			<section id="everkind-ai-consumer-company" class="everkind-ai-section" aria-label="Everkind — A New Kind of Consumer Company">
+			<section id="everkind-ai-consumer-company" class="everkind-ai-section" aria-label="Everkind — AI Native Consumer Wellness Platform">
 				<style is:inline>
+@import "tailwindcss";
+
 /* ==========================================================================
-   EVERKIND — Exact Brand Guidelines (Everkind Green #0B3D25 Typography)
-   Colors: Everkind Green (#0B3D25), Dark (#000000), BG (#FFFFFF), Light Grey (#F3F3F3)
-   Fonts: GFS Didot (Display Serif) & Inter (Sans-Serif)
+   EVERKIND — Exact Brand Guidelines & Color Tokens
    ========================================================================== */
 
 :root {
@@ -39,6 +39,18 @@ import WhyChooseUs from '../components/WhyChooseUs.astro';
   --font-serif: "GFS Didot", Georgia, serif;
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", monospace;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+html, body {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 
 .everkind-ai-section {
@@ -113,21 +125,31 @@ import WhyChooseUs from '../components/WhyChooseUs.astro';
   color: var(--color-everkind-midgrey);
 }
 
+.platform-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 1rem;
+  border-radius: 9999px;
+  background: rgba(11, 61, 37, 0.05);
+  border: 1px solid rgba(11, 61, 37, 0.12);
+  margin-bottom: 1.5rem;
+}
+
 .lime-dot {
   color: var(--color-everkind-lime);
   margin-right: 0.35rem;
 }
 
 /* ==========================================================================
-   SCREEN 1: HERO ROUNDED CARD SECTION (EVERKIND GREEN #0B3D25 TYPOGRAPHY)
+   SCREEN 1: HERO SECTION
    ========================================================================== */
 
 .hero-section {
   min-height: auto;
-  padding: 2rem 5vw;
+  padding: 2rem 5vw 3rem;
 }
 
-/* Background Orbit Graphic Behind Text */
 .hero-orbit-wrapper {
   position: absolute;
   top: 50%;
@@ -175,12 +197,11 @@ import WhyChooseUs from '../components/WhyChooseUs.astro';
   line-height: 1.1;
   letter-spacing: -0.02em;
   font-weight: 400;
-  color: var(--color-everkind-green); /* Everkind Green #0B3D25 */
+  color: var(--color-everkind-green);
   text-align: center;
   margin: 0 auto;
 }
 
-/* INLINE TOGGLE SWITCH MATCHING CONSUMER TEXT PERFECTLY */
 .o-toggle {
   display: inline-flex;
   align-items: center;
@@ -231,7 +252,6 @@ import WhyChooseUs from '../components/WhyChooseUs.astro';
   transform: translate(0.8em, -50%);
 }
 
-/* In-place Morph Statement Revealed ONLY WHEN TOGGLE IS ON */
 .hero-statement-container {
   margin-top: 1.5rem;
   max-width: 780px;
@@ -245,7 +265,7 @@ import WhyChooseUs from '../components/WhyChooseUs.astro';
   font-family: var(--font-serif);
   font-size: clamp(1.15rem, 2.2vw, 1.65rem);
   line-height: 1.35;
-  color: var(--color-everkind-green); /* Everkind Green #0B3D25 */
+  color: var(--color-everkind-green);
   opacity: 0;
   filter: blur(12px);
   transform: translateY(16px);
@@ -262,7 +282,6 @@ import WhyChooseUs from '../components/WhyChooseUs.astro';
   pointer-events: auto;
 }
 
-/* Pulsating Scroll Down Arrow Indicator Revealed ONLY WHEN TOGGLE IS ON */
 .hero-scroll-arrow {
   display: flex;
   flex-direction: column;
@@ -284,7 +303,7 @@ import WhyChooseUs from '../components/WhyChooseUs.astro';
 .arrow-svg {
   width: 22px;
   height: 22px;
-  color: var(--color-everkind-green); /* Everkind Green #0B3D25 */
+  color: var(--color-everkind-green);
   animation: pulseBounce 1.8s infinite;
 }
 
@@ -304,130 +323,135 @@ import WhyChooseUs from '../components/WhyChooseUs.astro';
 }
 
 /* ==========================================================================
-   SCREEN 2: LIFECYCLE STAGES (EVERKIND GREEN #0B3D25 HEADINGS)
+   AUTOMATED ANIMATED LOOP SECTION (WHITE BACKGROUND & EVERKIND GREEN GRAPH)
    ========================================================================== */
 
-.lifecycle-section {
-  min-height: auto;
-  padding: 1.5rem 5vw 4rem;
+.white-loop-section {
+  padding: 1.5rem 5vw 0.5rem;
+  width: 100%;
 }
 
-.lifecycle-container {
+.white-loop-card {
+  width: 100%;
   max-width: 1100px;
-  width: 100%;
   margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 2.25rem;
-}
-
-.stage-display-card {
-  background-color: var(--color-everkind-lightgrey);
+  background-color: #FFFFFF;
   border-radius: 24px;
-  border: 1px solid var(--border-subtle);
-  padding: clamp(2rem, 4vw, 3.25rem);
+  color: var(--color-everkind-green);
+  padding: clamp(2.5rem, 4vw, 3.5rem) clamp(1.5rem, 4vw, 3.5rem);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(11, 61, 37, 0.05), 0 2px 10px rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(11, 61, 37, 0.1);
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  align-items: center;
+  text-align: center;
+}
+
+.white-loop-spotlight {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 700px;
+  height: 700px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(11, 61, 37, 0.06) 0%, rgba(198, 245, 35, 0.04) 50%, rgba(255, 255, 255, 0) 70%);
+  pointer-events: none;
+}
+
+.white-loop-top-bar {
   width: 100%;
-  transition: transform 0.35s ease, box-shadow 0.35s ease;
-}
-
-.stage-display-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 16px 48px rgba(11, 61, 37, 0.05);
-}
-
-.card-top-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid rgba(11, 61, 37, 0.1);
-}
-
-.card-content-grid {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 2.5rem;
-}
-
-.stage-display-card.card-reverse .card-content-grid {
-  flex-direction: row-reverse;
-}
-
-.card-visual-box {
-  width: 260px;
-  height: 260px;
-  background: #FFFFFF;
-  border-radius: 16px;
+  margin-bottom: 1.5rem;
   position: relative;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  border: 1px solid rgba(11, 61, 37, 0.08);
+  z-index: 2;
+  border-bottom: 1px solid rgba(11, 61, 37, 0.08);
+  padding-bottom: 0.85rem;
 }
 
-.stageCanvas {
+.white-loop-top-bar .mono-micro {
+  color: var(--color-everkind-midgrey);
+}
+
+/* Agent Thinking Telemetry Bar */
+.agent-thinking-bar {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.9rem;
+  border-radius: 9999px;
+  background: rgba(11, 61, 37, 0.04);
+  border: 1px solid rgba(11, 61, 37, 0.1);
+  margin-bottom: 1.25rem;
+  position: relative;
+  z-index: 2;
+}
+
+.thinking-dot {
+  color: var(--color-everkind-green);
+  font-size: 0.8rem;
+  animation: agentPulse 1.5s infinite ease-in-out;
+}
+
+@keyframes agentPulse {
+  0%, 100% { opacity: 0.3; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+.thinking-text {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--color-everkind-green);
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.white-loop-canvas-wrapper {
+  width: 100%;
+  max-width: 440px;
+  aspect-ratio: 1 / 1;
+  position: relative;
+  margin: 0 auto;
+  z-index: 2;
+}
+
+#autoLoopCanvas {
   width: 100%;
   height: 100%;
   display: block;
 }
 
-.card-detail-panel {
-  flex: 1;
+.active-stage-display {
+  margin-top: 1.5rem;
+  position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: 0.85rem;
+  align-items: center;
+  gap: 0.25rem;
 }
 
-.card-subtitle {
-  color: var(--color-everkind-midgrey);
-}
-
-.card-heading {
+.active-stage-name {
   font-family: var(--font-serif);
-  font-size: clamp(1.6rem, 2.6vw, 2.2rem);
-  line-height: 1.2;
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: var(--color-everkind-green);
   font-weight: 400;
-  color: var(--color-everkind-green); /* Everkind Green #0B3D25 */
-}
-
-.card-desc {
-  font-family: var(--font-sans);
-  font-size: 0.92rem;
-  line-height: 1.55;
-  color: var(--color-everkind-midgrey);
-  max-width: 480px;
-}
-
-.blur-card {
-  opacity: 0;
-  filter: blur(16px);
-  transform: translateY(28px);
-  will-change: opacity, filter, transform;
-  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1),
-              filter 0.85s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.blur-card.is-visible {
-  opacity: 1;
-  filter: blur(0px);
-  transform: translateY(0);
+  letter-spacing: -0.02em;
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 /* ==========================================================================
-   SCREEN 3: FINAL THESIS (EVERKIND GREEN #0B3D25 CARD BACKGROUND)
+   SCREEN 3: FINAL THESIS SECTION (TIGHTER GAP)
    ========================================================================== */
 
 .thesis-section {
   min-height: auto;
-  padding: 3rem 5vw 4rem;
+  padding: 1.25rem 5vw 4rem;
   background-color: transparent;
 }
 
@@ -435,7 +459,7 @@ import WhyChooseUs from '../components/WhyChooseUs.astro';
   max-width: 1100px;
   width: 100%;
   margin: 0 auto;
-  background-color: var(--color-everkind-green); /* Everkind Green #0B3D25 */
+  background-color: var(--color-everkind-green);
   border-radius: 24px;
   color: var(--color-everkind-bg);
   padding: clamp(3.5rem, 6vw, 5rem) clamp(2rem, 4vw, 4rem);
@@ -520,20 +544,6 @@ import WhyChooseUs from '../components/WhyChooseUs.astro';
   padding-bottom: 2px;
 }
 
-.thesis-footer {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 3.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
-  padding-top: 1.5rem;
-}
-
-.thesis-footer .mono-micro {
-  color: rgba(255, 255, 255, 0.6);
-}
-
 /* ==========================================================================
    RESPONSIVE BREAKPOINTS
    ========================================================================== */
@@ -562,26 +572,9 @@ import WhyChooseUs from '../components/WhyChooseUs.astro';
     font-size: clamp(1.1rem, 3.5vw, 1.4rem);
   }
 
-  .stage-display-card {
-    padding: 1.5rem;
+  .white-loop-card {
+    padding: 2rem 1.25rem;
     border-radius: 18px;
-  }
-
-  .card-content-grid,
-  .stage-display-card.card-reverse .card-content-grid {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1.5rem;
-  }
-
-  .card-visual-box {
-    width: 100%;
-    height: 220px;
-    border-radius: 12px;
-  }
-
-  .card-heading {
-    font-size: clamp(1.4rem, 4.5vw, 1.8rem);
   }
 
   .thesis-card-wrapper {
@@ -598,15 +591,7 @@ import WhyChooseUs from '../components/WhyChooseUs.astro';
     height: 420px;
   }
 }
-
-@media (max-width: 767px) {
-  /* Keep the mobile stage artwork airy inside its visual frame. */
-  .stageCanvas {
-    width: 92%;
-    height: 92%;
-  }
-}
-					</style>
+				</style>
 
 				<!-- Ambient Motion Graphics Layer & Orbital Rings Behind Content -->
 				<div class="ambient-background" aria-hidden="true">
@@ -616,7 +601,7 @@ import WhyChooseUs from '../components/WhyChooseUs.astro';
 
 				<div class="everkind-interactive-app">
 
-					<!-- SCREEN 1: HERO ROUNDED CARD SECTION (REF IMAGE MATCH) -->
+					<!-- SCREEN 1: HERO SECTION WITH BRAND BADGE & MORPH TOGGLE -->
 					<section class="screen-section hero-section" id="hero">
 						<div class="hero-orbit-wrapper" aria-hidden="true">
 							<svg viewBox="0 0 600 600" class="hero-orbit-svg">
@@ -628,20 +613,23 @@ import WhyChooseUs from '../components/WhyChooseUs.astro';
 						</div>
 
 						<div class="hero-inner">
+							<div class="platform-pill">
+								<span class="mono-micro"><span class="lime-dot">•</span> AI Native Consumer Wellness Platform</span>
+							</div>
+
 							<h1 class="hero-headline">
 								We are building a new<br>
 								kind of C<button class="o-toggle" id="oToggle" type="button" role="switch" aria-label="Toggle brand mode" aria-checked="false"><span class="toggle-track"><span class="toggle-knob"></span></span></button>nsumer<br>
 								company
 							</h1>
 
-							<!-- In-place Morph Statement & Scroll Arrow Revealed ONLY WHEN TOGGLE IS ON -->
 							<div class="hero-statement-container" id="heroStatementContainer">
 								<p class="hero-toggle-statement" id="heroToggleStatement">
 									One powered by AI that <span class="emphasis-italic">learns &amp; iterates</span> across the entire brand lifecycle.
 								</p>
 
 								<div class="hero-scroll-arrow" id="heroScrollArrow">
-									<span class="mono-micro">SCROLL TO EXPLORE</span>
+									<span class="mono-micro">SCROLL TO EXPLORE THE LOOP</span>
 									<svg viewBox="0 0 24 24" class="arrow-svg">
 										<path d="M12 4v16m0 0l-6-6m6 6l6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
 									</svg>
@@ -654,104 +642,35 @@ import WhyChooseUs from '../components/WhyChooseUs.astro';
 						</div>
 					</section>
 
-					<!-- SCREEN 2: ALL 5 LIFECYCLE STAGES IN ROUNDED ZIGZAG CARDS (01 TO 05) -->
-					<section class="screen-section lifecycle-section" id="lifecycle">
-						<div class="lifecycle-container">
+					<!-- SINGLE AUTOMATED ANIMATED LOOP SECTION ON WHITE BACKGROUND -->
+					<section class="screen-section white-loop-section" id="brand-loop">
+						<div class="white-loop-card">
+							<div class="white-loop-spotlight"></div>
 
-							<!-- CARD 01: CONSUMER INSIGHT -->
-							<div class="stage-display-card blur-card" data-stage="1">
-								<div class="card-top-bar">
-									<span class="mono-micro">CURRENT STATE / 01</span>
-									<span class="mono-micro">SYSTEM READY</span>
-								</div>
-								<div class="card-content-grid">
-									<div class="card-visual-box">
-										<canvas class="stageCanvas" id="canvasStage1" width="300" height="300"></canvas>
-									</div>
-									<div class="card-detail-panel">
-										<span class="mono-micro card-subtitle">LISTEN BEFORE YOU BUILD.</span>
-										<h2 class="card-heading">Consumer Insight</h2>
-										<p class="card-desc">Turn weak signals into a clearer brief for what should exist next. Real-time sensing across emerging cultural trends and consumer desire.</p>
-									</div>
-								</div>
+							<div class="white-loop-top-bar">
+								<span class="mono-micro"><span class="lime-dot">•</span> CONTINUOUS ITERATION LOOP</span>
+								<span class="mono-micro">AI-DRIVEN BRAND LIFECYCLE</span>
 							</div>
 
-							<!-- CARD 02: PRODUCT INNOVATION (ZIGZAG REVERSE) -->
-							<div class="stage-display-card card-reverse blur-card" data-stage="2">
-								<div class="card-top-bar">
-									<span class="mono-micro">CURRENT STATE / 02</span>
-									<span class="mono-micro">SYSTEM READY</span>
-								</div>
-								<div class="card-content-grid">
-									<div class="card-visual-box">
-										<canvas class="stageCanvas" id="canvasStage2" width="300" height="300"></canvas>
-									</div>
-									<div class="card-detail-panel">
-										<span class="mono-micro card-subtitle">SYNTHESIZE FORM &amp; FUNCTION.</span>
-										<h2 class="card-heading">Product Innovation</h2>
-										<p class="card-desc">Rapid generative synthesis of formulations, designs, and value propositions tuned to verified consumer demand.</p>
-									</div>
-								</div>
+							<!-- Agent Thinking Telemetry Status Line -->
+							<div class="agent-thinking-bar">
+								<span class="thinking-dot">•</span>
+								<span class="thinking-text" id="agentThinkingText">ai agent: sensing real-time consumer signals...</span>
 							</div>
 
-							<!-- CARD 03: LAUNCH -->
-							<div class="stage-display-card blur-card" data-stage="3">
-								<div class="card-top-bar">
-									<span class="mono-micro">CURRENT STATE / 03</span>
-									<span class="mono-micro">SYSTEM READY</span>
-								</div>
-								<div class="card-content-grid">
-									<div class="card-visual-box">
-										<canvas class="stageCanvas" id="canvasStage3" width="300" height="300"></canvas>
-									</div>
-									<div class="card-detail-panel">
-										<span class="mono-micro card-subtitle">DEPLOY WITH INSTRUMENTATION.</span>
-										<h2 class="card-heading">Launch</h2>
-										<p class="card-desc">Targeted, adaptive deployment with live instrumentation across digital &amp; physical touchpoints.</p>
-									</div>
-								</div>
+							<!-- Animated 60fps Loop Canvas -->
+							<div class="white-loop-canvas-wrapper">
+								<canvas id="autoLoopCanvas" width="500" height="500"></canvas>
 							</div>
 
-							<!-- CARD 04: CONSUMER FEEDBACK (ZIGZAG REVERSE) -->
-							<div class="stage-display-card card-reverse blur-card" data-stage="4">
-								<div class="card-top-bar">
-									<span class="mono-micro">CURRENT STATE / 04</span>
-									<span class="mono-micro">SYSTEM READY</span>
-								</div>
-								<div class="card-content-grid">
-									<div class="card-visual-box">
-										<canvas class="stageCanvas" id="canvasStage4" width="300" height="300"></canvas>
-									</div>
-									<div class="card-detail-panel">
-										<span class="mono-micro card-subtitle">CAPTURE REAL USAGE PATTERNS.</span>
-										<h2 class="card-heading">Consumer Feedback</h2>
-										<p class="card-desc">Direct telemetry from actual post-purchase experience, satisfaction loops, and organic sentiment.</p>
-									</div>
-								</div>
+							<!-- Live Active Stage Display Readout -->
+							<div class="active-stage-display">
+								<h2 class="active-stage-name" id="activeStageName">Consumer Insight</h2>
 							</div>
-
-							<!-- CARD 05: CONTINUOUS LEARNING -->
-							<div class="stage-display-card blur-card" data-stage="5">
-								<div class="card-top-bar">
-									<span class="mono-micro">CURRENT STATE / 05</span>
-									<span class="mono-micro">SYSTEM READY</span>
-								</div>
-								<div class="card-content-grid">
-									<div class="card-visual-box">
-										<canvas class="stageCanvas" id="canvasStage5" width="300" height="300"></canvas>
-									</div>
-									<div class="card-detail-panel">
-										<span class="mono-micro card-subtitle">CLOSE THE ITERATION LOOP.</span>
-										<h2 class="card-heading">Continuous Learning</h2>
-										<p class="card-desc">Closing the loop automatically to feed learnings back into the next innovation cycle continuously.</p>
-									</div>
-								</div>
-							</div>
-
 						</div>
 					</section>
 
-					<!-- SCREEN 3: FINAL THESIS ROUNDED CARD SECTION -->
+					<!-- SCREEN 3: FINAL THESIS CARD SECTION -->
 					<section class="screen-section thesis-section">
 						<div class="thesis-card-wrapper" id="thesis">
 							<div class="thesis-spotlight" id="thesisSpotlight"></div>
@@ -763,7 +682,7 @@ import WhyChooseUs from '../components/WhyChooseUs.astro';
 
 							<div class="thesis-inner">
 								<p class="blur-reveal-text thesis-text" id="finalThesis">
-									We believe the future of consumer brands may not be built by companies that are best at <em class="lime-italic">predicting</em> what consumers want. It may be built by companies that are best at continuously <em class="lime-italic">learning</em> what consumers want — and converting that learning into products <strong class="highlight-white">faster than everyone else</strong>.
+									We believe the future of consumer brands belongs to companies that don’t try to predict what consumers want. They <em class="lime-italic">learn, adapt, and build their way there</em> — continuously turning consumer signals into <strong class="highlight-white">better products &amp; services</strong>.
 								</p>
 							</div>
 						</div>
@@ -777,6 +696,24 @@ document.addEventListener('DOMContentLoaded', () => {
   let lenisInstance = null;
   let audioCtx = null;
 
+  const loopStageNames = [
+    'Consumer Insight',
+    'Product Innovation',
+    'Launch',
+    'Consumer Feedback',
+    'Continuous Learning'
+  ];
+
+  const thinkingMessages = [
+    'ai agent: sensing real-time consumer signals...',
+    'ai agent: synthesizing generative product innovations...',
+    'ai agent: orchestrating adaptive market launch...',
+    'ai agent: processing direct usage telemetry...',
+    'ai agent: optimizing continuous learning loops...'
+  ];
+
+  let currentStageIndex = 0;
+
   // DOM Elements
   const oToggle = document.getElementById('oToggle');
   const heroToggleStatement = document.getElementById('heroToggleStatement');
@@ -784,31 +721,23 @@ document.addEventListener('DOMContentLoaded', () => {
   const heroInstructionText = document.getElementById('heroInstructionText');
   const thesisSection = document.getElementById('thesis');
   const thesisSpotlight = document.getElementById('thesisSpotlight');
-  const systemStatusText = document.getElementById('systemStatusText');
 
-  // Register GSAP Plugins
+  const activeStageName = document.getElementById('activeStageName');
+  const agentThinkingText = document.getElementById('agentThinkingText');
+
   if (window.gsap && window.ScrollTrigger) {
     gsap.registerPlugin(ScrollTrigger);
   }
 
-  // Initialize Smooth Scroll Engine
   initSmoothScroll();
-
-  // Initialize Hero Toggle (SHOW STATEMENT & SCROLL ARROW ONLY WHEN ON)
   initToggleSwitch();
-
-  // Initialize Thesis Spotlight
   initThesisSpotlight();
-
-  // Initialize Scroll Triggers
   initScrollTriggers();
-
-  // Initialize Canvases for Stage 1 to 5
   initAmbientBackgroundCanvas();
-  initStageCanvases();
+  initAutomatedLoopCanvas();
 
   /* ==========================================================================
-     1. HERO TOGGLE SWITCH HANDLER (SHOW STATEMENT & SCROLL ARROW ONLY WHEN ON)
+     1. HERO TOGGLE SWITCH HANDLER
      ========================================================================== */
 
   function initToggleSwitch() {
@@ -821,7 +750,6 @@ document.addEventListener('DOMContentLoaded', () => {
       oToggle.classList.toggle('is-active', isToggleActive);
       oToggle.setAttribute('aria-checked', isToggleActive ? 'true' : 'false');
 
-      // Show statement & scroll arrow ONLY WHEN TOGGLE IS ON!
       if (heroToggleStatement) {
         heroToggleStatement.classList.toggle('is-active', isToggleActive);
       }
@@ -835,16 +763,35 @@ document.addEventListener('DOMContentLoaded', () => {
           : 'TAP THE TOGGLE TO BEGIN';
       }
 
-      if (systemStatusText) {
-        systemStatusText.textContent = isToggleActive 
-          ? 'MODE: ADAPTIVE AI ACTIVE' 
-          : 'MODE: BASELINE SYSTEM';
-      }
-
       playTactileClickSound();
-
-      // DO NOT CALL scrollTo() or scrollIntoView()!
+      logToggleEventToDashboard(isToggleActive);
     });
+  }
+
+  // Vercel Cloud Telemetry Engine Tracking
+  const pageLoadTime = performance.now();
+  try {
+    fetch('/api/telemetry', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'page_view', page: 'index' })
+    }).catch(() => {});
+  } catch (e) {}
+
+  function logToggleEventToDashboard(active) {
+    try {
+      const latencySec = parseFloat(((performance.now() - pageLoadTime) / 1000).toFixed(1));
+      fetch('/api/telemetry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'toggle_click',
+          active: active,
+          latency: latencySec,
+          page: 'index'
+        })
+      }).catch(() => {});
+    } catch (err) {}
   }
 
   function playTactileClickSound() {
@@ -875,7 +822,176 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ==========================================================================
-     2. THESIS CURSOR SPOTLIGHT EFFECT
+     2. AUTOMATED ANIMATED LOOP CANVAS (#autoLoopCanvas)
+     ========================================================================== */
+
+  function updateStageText(index) {
+    if (currentStageIndex === index) return;
+    currentStageIndex = index;
+    const stageName = loopStageNames[currentStageIndex];
+    const thinkingMsg = thinkingMessages[currentStageIndex];
+
+    if (activeStageName) {
+      activeStageName.style.opacity = '0';
+      activeStageName.style.transform = 'translateY(6px)';
+      setTimeout(() => {
+        activeStageName.textContent = stageName;
+        activeStageName.style.opacity = '1';
+        activeStageName.style.transform = 'translateY(0)';
+      }, 120);
+    }
+
+    if (agentThinkingText) {
+      agentThinkingText.style.opacity = '0';
+      setTimeout(() => {
+        agentThinkingText.textContent = thinkingMsg;
+        agentThinkingText.style.opacity = '1';
+      }, 120);
+    }
+  }
+
+  function initAutomatedLoopCanvas() {
+    const canvas = document.getElementById('autoLoopCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width;
+    const h = canvas.height;
+    const cx = w / 2;
+    const cy = h / 2;
+    const radius = 155;
+
+    let particleAngle = -Math.PI / 2;
+
+    function renderAutoLoop() {
+      particleAngle += 0.008;
+      ctx.clearRect(0, 0, w, h);
+
+      // DYNAMIC NODE CROSSING SYNCHRONIZATION LOGIC:
+      // Calculate particle angle normalized relative to top (-PI/2)
+      let angleNormalized = (particleAngle + Math.PI / 2) % (2 * Math.PI);
+      if (angleNormalized < 0) angleNormalized += 2 * Math.PI;
+
+      // Each node sector spans 72 degrees (2*PI/5 rad)
+      const sector = (2 * Math.PI) / 5;
+      const detectedNode = Math.floor(((angleNormalized + (Math.PI / 5)) % (2 * Math.PI)) / sector);
+      
+      updateStageText(detectedNode);
+
+      // Outer Soft Green Glow
+      const bgGrad = ctx.createRadialGradient(cx, cy, 20, cx, cy, radius + 40);
+      bgGrad.addColorStop(0, 'rgba(11, 61, 37, 0.08)');
+      bgGrad.addColorStop(0.5, 'rgba(198, 245, 35, 0.06)');
+      bgGrad.addColorStop(1, 'transparent');
+      ctx.fillStyle = bgGrad;
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius + 40, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Main Planet Orbit Track Line (Everkind Green - CLEAN CIRCLE WITHOUT SPOKES)
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+      ctx.strokeStyle = '#0B3D25';
+      ctx.globalAlpha = 0.2;
+      ctx.lineWidth = 2.5;
+      ctx.setLineDash([8, 8]);
+      ctx.stroke();
+      ctx.restore();
+
+      // Inner Ambient Guide Ring
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius - 24, 0, Math.PI * 2);
+      ctx.strokeStyle = '#0B3D25';
+      ctx.globalAlpha = 0.08;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+
+      // Central Pulse Core (Everkind Green #0B3D25)
+      const coreGrad = ctx.createRadialGradient(cx, cy, 4, cx, cy, 55);
+      coreGrad.addColorStop(0, '#0B3D25');
+      coreGrad.addColorStop(0.4, 'rgba(11, 61, 37, 0.25)');
+      coreGrad.addColorStop(1, 'transparent');
+      ctx.fillStyle = coreGrad;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 55, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#0B3D25';
+      ctx.beginPath();
+      ctx.arc(cx, cy, 22, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#C6F523';
+      ctx.beginPath();
+      ctx.arc(cx, cy, 7, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Draw 5 Nodes around the circle (NO SPOKE LINES TO CENTER)
+      const totalNodes = 5;
+      for (let i = 0; i < totalNodes; i++) {
+        const nodeAngle = (i * (2 * Math.PI / totalNodes)) - (Math.PI / 2);
+        const nx = cx + Math.cos(nodeAngle) * radius;
+        const ny = cy + Math.sin(nodeAngle) * radius;
+        const isActive = (i === currentStageIndex);
+
+        // Node Active Glow Ring
+        if (isActive) {
+          ctx.beginPath();
+          ctx.arc(nx, ny, 26, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(11, 61, 37, 0.15)';
+          ctx.fill();
+        }
+
+        // Node Main Outer Ring & Disc
+        ctx.beginPath();
+        ctx.arc(nx, ny, isActive ? 17 : 12, 0, Math.PI * 2);
+        ctx.fillStyle = isActive ? '#0B3D25' : '#FFFFFF';
+        ctx.fill();
+
+        ctx.strokeStyle = '#0B3D25';
+        ctx.lineWidth = isActive ? 3 : 1.5;
+        ctx.stroke();
+
+        // Step Label inside node
+        ctx.fillStyle = isActive ? '#C6F523' : '#0B3D25';
+        ctx.font = 'bold 10px "JetBrains Mono", monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(`0${i+1}`, nx, ny);
+      }
+
+      // Animated Energy Beam Particle along orbit (Everkind Green + Lime)
+      const px = cx + Math.cos(particleAngle) * radius;
+      const py = cy + Math.sin(particleAngle) * radius;
+
+      // Particle Trail
+      for (let k = 1; k <= 6; k++) {
+        const trailAngle = particleAngle - (k * 0.04);
+        const tx = cx + Math.cos(trailAngle) * radius;
+        const ty = cy + Math.sin(trailAngle) * radius;
+        ctx.beginPath();
+        ctx.arc(tx, ty, 7 - k, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(11, 61, 37, ${0.8 - k * 0.12})`;
+        ctx.fill();
+      }
+
+      ctx.beginPath();
+      ctx.arc(px, py, 7.5, 0, Math.PI * 2);
+      ctx.fillStyle = '#0B3D25';
+      ctx.shadowColor = '#0B3D25';
+      ctx.shadowBlur = 12;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      requestAnimationFrame(renderAutoLoop);
+    }
+
+    renderAutoLoop();
+  }
+
+  /* ==========================================================================
+     3. THESIS CURSOR SPOTLIGHT EFFECT
      ========================================================================== */
 
   function initThesisSpotlight() {
@@ -892,29 +1008,17 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ==========================================================================
-     3. GSAP BLUR REVEALS FOR VERTICAL ZIGZAG CARDS (01 TO 05)
+     4. GSAP BLUR REVEALS
      ========================================================================== */
 
   function initScrollTriggers() {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     if (prefersReducedMotion) {
-      document.querySelectorAll('.blur-card, .blur-reveal-text').forEach((el) => el.classList.add('is-visible'));
+      document.querySelectorAll('.blur-reveal-text').forEach((el) => el.classList.add('is-visible'));
       return;
     }
 
-    // Blur reveal for all 5 vertical stage cards as user scrolls
-    const blurCards = document.querySelectorAll('.blur-card');
-    blurCards.forEach((card) => {
-      ScrollTrigger.create({
-        trigger: card,
-        start: 'top 82%',
-        onEnter: () => card.classList.add('is-visible'),
-        onLeaveBack: () => card.classList.remove('is-visible')
-      });
-    });
-
-    // Final Thesis Reveal
     const finalThesis = document.getElementById('finalThesis');
     if (finalThesis) {
       ScrollTrigger.create({
@@ -927,7 +1031,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ==========================================================================
-     4. LENIS SMOOTH SCROLL
+     5. LENIS SMOOTH SCROLL
      ========================================================================== */
 
   function initSmoothScroll() {
@@ -949,208 +1053,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     gsap.ticker.lagSmoothing(0);
-  }
-
-  /* ==========================================================================
-     5. STAGE CANVASES VISUALIZERS (01 TO 05)
-     ========================================================================== */
-
-  function initStageCanvases() {
-    let t = 0;
-
-    function renderStageCanvases() {
-      t += 0.012;
-
-      // Stage 1: Radar Pulse & Orbit Lines
-      renderCanvas1(t);
-      // Stage 2: Generative Form Grid
-      renderCanvas2(t);
-      // Stage 3: Particle Vector Stream
-      renderCanvas3(t);
-      // Stage 4: Telemetry Wave Ripples
-      renderCanvas4(t);
-      // Stage 5: Infinity Loop Node
-      renderCanvas5(t);
-
-      requestAnimationFrame(renderStageCanvases);
-    }
-
-    renderStageCanvases();
-  }
-
-  // Canvas 1: Consumer Insight Orbit Pulse
-  function renderCanvas1(t) {
-    const canvas = document.getElementById('canvasStage1');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const w = canvas.width;
-    const h = canvas.height;
-    ctx.clearRect(0, 0, w, h);
-
-    const cx = w / 2;
-    const cy = h / 2;
-
-    drawCenterNode(ctx, cx, cy);
-
-    drawEllipse(ctx, cx, cy, 115, 55, -0.4, 'rgba(11, 61, 37, 0.22)');
-    drawEllipse(ctx, cx, cy, 128, 70, 0.6, 'rgba(11, 61, 37, 0.18)');
-
-    const p1 = getPointOnEllipse(cx, cy, 115, 55, -0.4, t * 0.85);
-    ctx.beginPath();
-    ctx.arc(p1.x, p1.y, 4.5, 0, Math.PI * 2);
-    ctx.fillStyle = '#0B3D25';
-    ctx.fill();
-  }
-
-  // Canvas 2: Product Innovation Grid Synthesis
-  function renderCanvas2(t) {
-    const canvas = document.getElementById('canvasStage2');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const w = canvas.width;
-    const h = canvas.height;
-    ctx.clearRect(0, 0, w, h);
-
-    const cx = w / 2;
-    const cy = h / 2;
-
-    drawCenterNode(ctx, cx, cy);
-
-    ctx.save();
-    ctx.translate(cx, cy);
-    ctx.rotate(t * 0.25);
-    ctx.strokeStyle = 'rgba(11, 61, 37, 0.15)';
-    ctx.lineWidth = 1;
-    for (let r = 35; r <= 110; r += 25) {
-      ctx.beginPath();
-      ctx.rect(-r, -r, r * 2, r * 2);
-      ctx.stroke();
-    }
-    ctx.restore();
-  }
-
-  // Canvas 3: Launch Particle Stream
-  function renderCanvas3(t) {
-    const canvas = document.getElementById('canvasStage3');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const w = canvas.width;
-    const h = canvas.height;
-    ctx.clearRect(0, 0, w, h);
-
-    const cx = w / 2;
-    const cy = h / 2;
-
-    drawCenterNode(ctx, cx, cy);
-
-    ctx.strokeStyle = 'rgba(198, 245, 35, 0.4)';
-    ctx.lineWidth = 1.2;
-    for (let i = 0; i < 8; i++) {
-      const angle = (Math.PI * 2 / 8) * i + t * 0.5;
-      const x2 = cx + Math.cos(angle) * 110;
-      const y2 = cy + Math.sin(angle) * 110;
-      ctx.beginPath();
-      ctx.moveTo(cx, cy);
-      ctx.lineTo(x2, y2);
-      ctx.stroke();
-    }
-  }
-
-  // Canvas 4: Consumer Feedback Wave Ripples
-  function renderCanvas4(t) {
-    const canvas = document.getElementById('canvasStage4');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const w = canvas.width;
-    const h = canvas.height;
-    ctx.clearRect(0, 0, w, h);
-
-    const cx = w / 2;
-    const cy = h / 2;
-
-    drawCenterNode(ctx, cx, cy);
-
-    for (let i = 0; i < 3; i++) {
-      const radius = ((t * 40 + i * 35) % 110) + 10;
-      const alpha = Math.max(0, 1 - radius / 110) * 0.3;
-      ctx.beginPath();
-      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-      ctx.strokeStyle = `rgba(11, 61, 37, ${alpha})`;
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-    }
-  }
-
-  // Canvas 5: Continuous Learning Infinity Loop
-  function renderCanvas5(t) {
-    const canvas = document.getElementById('canvasStage5');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const w = canvas.width;
-    const h = canvas.height;
-    ctx.clearRect(0, 0, w, h);
-
-    const cx = w / 2;
-    const cy = h / 2;
-
-    drawCenterNode(ctx, cx, cy);
-
-    ctx.save();
-    ctx.translate(cx, cy);
-    ctx.beginPath();
-    ctx.strokeStyle = 'rgba(11, 61, 37, 0.22)';
-    ctx.lineWidth = 1.5;
-    for (let a = 0; a < Math.PI * 2; a += 0.05) {
-      const scale = 90 / (1 + Math.sin(a) * Math.sin(a));
-      const x = scale * Math.cos(a);
-      const y = scale * Math.sin(a) * Math.cos(a);
-      if (a === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    }
-    ctx.stroke();
-    ctx.restore();
-  }
-
-  function drawCenterNode(ctx, cx, cy) {
-    const gradient = ctx.createRadialGradient(cx, cy, 4, cx, cy, 36);
-    gradient.addColorStop(0, '#FFFFFF');
-    gradient.addColorStop(0.35, '#C6F523');
-    gradient.addColorStop(1, 'rgba(198, 245, 35, 0)');
-
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(cx, cy, 36, 0, Math.PI * 2);
-    ctx.fillStyle = gradient;
-    ctx.fill();
-    ctx.restore();
-
-    ctx.beginPath();
-    ctx.arc(cx, cy, 14, 0, Math.PI * 2);
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fill();
-  }
-
-  function drawEllipse(context, x, y, rx, ry, rotation, strokeStyle) {
-    context.save();
-    context.translate(x, y);
-    context.rotate(rotation);
-    context.beginPath();
-    context.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
-    context.strokeStyle = strokeStyle;
-    context.lineWidth = 1.2;
-    context.stroke();
-    context.restore();
-  }
-
-  function getPointOnEllipse(cx, cy, rx, ry, rotation, angle) {
-    const px = rx * Math.cos(angle);
-    const py = ry * Math.sin(angle);
-    const cosR = Math.cos(rotation);
-    const sinR = Math.sin(rotation);
-    return {
-      x: cx + (px * cosR - py * sinR),
-      y: cy + (px * sinR + py * cosR)
-    };
   }
 
   /* ==========================================================================

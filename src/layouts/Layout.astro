@@ -15,7 +15,7 @@ const { title } = Astro.props;
 <html lang="en" >
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 
@@ -43,6 +43,14 @@ const { title } = Astro.props;
     	    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     	    smoothWheel: true,
     	  });
+    	  (window as any).lenis = lenis;
+
+    	  // Prevent accidental trackpad Ctrl-Wheel pinch zooming from distorting page scale
+    	  window.addEventListener('wheel', (e) => {
+    	    if (e.ctrlKey) {
+    	      e.preventDefault();
+    	    }
+    	  }, { passive: false });
 
     	  document.addEventListener('DOMContentLoaded', () => {
     	    const parallaxElements = document.querySelectorAll('[data-parallax]');
